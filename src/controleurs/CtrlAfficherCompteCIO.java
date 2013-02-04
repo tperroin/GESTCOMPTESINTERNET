@@ -129,7 +129,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense()});   
+             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
         }
         
         aspectJtable();
@@ -143,7 +143,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense()});   
+             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
         }
         
         aspectJtable();
@@ -214,7 +214,6 @@ public class CtrlAfficherCompteCIO extends Controleur {
             Object dateFacture = table.getValueAt(modelRow, 3);
             Object modeReglement = table.getValueAt(modelRow, 4);
             Object montant = table.getValueAt(modelRow, 5);
-            Object solde = table.getValueAt(modelRow, 6);
             Object etat = table.getValueAt(modelRow, 7);
             Object anticipation = table.getValueAt(modelRow, 8);
             Object recdep = table.getValueAt(modelRow, 10);

@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import modele.dao.DaoException;
 import modele.dao.DaoH2;
 
-public class ModelTable extends DefaultTableModel implements Reorderable {
+public class ModelTableCIO extends DefaultTableModel implements Reorderable {
     private Object data;
         
   public void reorder(int from, int to) {
@@ -25,7 +25,7 @@ public class ModelTable extends DefaultTableModel implements Reorderable {
             mettreAJourOrdre(to, from);
     
         } catch (DaoException ex) {
-            Logger.getLogger(ModelTable.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ModelTableCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     
     
@@ -43,7 +43,7 @@ public class ModelTable extends DefaultTableModel implements Reorderable {
          
         dao.connecter();
         
-        dao.mettreAJourOrdre(to, from);
+        dao.mettreAJourOrdreCIO(to, from);
         
    }       
    

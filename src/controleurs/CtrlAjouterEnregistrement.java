@@ -35,6 +35,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
     
     CtrlAjouterEnregistrement ctrlAjouterEnregistrement;
     CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
+    CtrlAfficherCompteCM ctrlAfficherCompteCM;
     CtrlAccueil ctrlAccueil;
     
     public CtrlAjouterEnregistrement(Controleur ctrl) throws DaoException {
@@ -78,6 +79,14 @@ public class CtrlAjouterEnregistrement extends Controleur {
             ctrlAfficherCompteCIO = new CtrlAfficherCompteCIO(this);
         }else{
             ctrlAfficherCompteCIO.afficherVue();
+        }
+        this.cacherVue();
+    }
+    public void afficherAfficherCompteCM() throws DaoException{
+        if (ctrlAfficherCompteCM == null){
+            ctrlAfficherCompteCM = new CtrlAfficherCompteCM(this);
+        }else{
+            ctrlAfficherCompteCM.afficherVue();
         }
         this.cacherVue();
     }
@@ -264,13 +273,15 @@ public class CtrlAjouterEnregistrement extends Controleur {
                 dao.ajouterLibelle(idLibelle, ((VueAjouterEnregistrement)vue).getModeleJComboBoxLibelle().getSelectedItem().toString());
             }
             
-            Integer ordre = dernierOrdreEnr();
+            
             
             ModeReglement unModeReglement = (ModeReglement)(((VueAjouterEnregistrement)vue).getModeleJComboBoxModeReglement().getSelectedItem());
             Integer idModeReglement = unModeReglement.getId();
             
             Compte unCompte = (Compte)(((VueAjouterEnregistrement)vue).getModeleJComboBoxCompte().getSelectedItem());
             Integer idCompte = unCompte.getId();
+            
+            Integer ordre = dernierOrdreEnr(idCompte);
             
             Etat unEtat = (Etat)(((VueAjouterEnregistrement)vue).getModeleJComboBoxEtat().getSelectedItem());
             Integer idEtat = unEtat.getId();
@@ -349,7 +360,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
                 // Insertion pour la jcombobox libelle5
                 
                 Integer id5 = dernierIdEnr();
-                Integer ordre5 = dernierOrdreEnr();
+                Integer ordre5 = dernierOrdreEnr(idCompte);
                 
                 Libelle unLibelle5;
                 Integer idLibelle5 = null;
@@ -415,7 +426,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
 
                         Integer id2 = dernierIdEnr();
-                        Integer ordre2 = dernierOrdreEnr();
+                        Integer ordre2 = dernierOrdreEnr(idCompte);
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
@@ -471,7 +482,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
 
                         Integer id3 = dernierIdEnr();
-                        Integer ordre3 = dernierOrdreEnr();
+                        Integer ordre3 = dernierOrdreEnr(idCompte);
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
@@ -527,7 +538,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
                     try{
                         
                         Integer id4 = dernierIdEnr();
-                        Integer ordre4 = dernierOrdreEnr();
+                        Integer ordre4 = dernierOrdreEnr(idCompte);
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
@@ -590,11 +601,11 @@ public class CtrlAjouterEnregistrement extends Controleur {
             return nouveauNum;
     }
     
-    public Integer dernierOrdreEnr() throws DaoException{
+    public Integer dernierOrdreEnr(Integer idCompte) throws DaoException{
         dao = new DaoH2("gestComptes", "sa", "");
          
             dao.connecter();
-            Integer dernierOrdre = dao.recupererDernierOrdre();
+            Integer dernierOrdre = dao.recupererDernierOrdre(idCompte);
             Integer nouvelOrdre = dernierOrdre + 1;
             
             return nouvelOrdre;
@@ -991,7 +1002,7 @@ public class CtrlAjouterEnregistrement extends Controleur {
             try{
                 montant = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant().getText());
                 
-                ancienSolde = dao.recupererAncienDernierSolde();
+                ancienSolde = dao.recupererAncienDernierSolde(idCompte);
                 
             
                 nouveauSolde = null;

@@ -92,6 +92,11 @@ public class VueAccueil extends VueAbstraite {
 
         jMenuItemCM.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemCM.setText("Compte Crédit Mutuel");
+        jMenuItemCM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCMActionPerformed(evt);
+            }
+        });
         jMenuAfficher.add(jMenuItemCM);
 
         jMenuBarMenu.add(jMenuAfficher);
@@ -125,7 +130,7 @@ public class VueAccueil extends VueAbstraite {
             .addGroup(layout.createSequentialGroup()
                 .addGap(127, 127, 127)
                 .addComponent(jLabelTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 253, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 261, Short.MAX_VALUE)
                 .addComponent(jLabel1))
         );
 
@@ -151,6 +156,14 @@ public class VueAccueil extends VueAbstraite {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCIOActionPerformed
+
+    private void jMenuItemCMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCMActionPerformed
+        try {
+            ((CtrlAccueil)controleur).afficherAfficherCompteCM();
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemCMActionPerformed
 
    
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -32,27 +32,27 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import modele.dao.DaoException;
-import modele.jtable.ModelTableCIO;
+import modele.jtable.ModelTableCM;
 
 /**
  *
  * @author btssio
  */
-public class VueAfficherCompteCIO extends VueAbstraite{
+public class VueAfficherCompteCM extends VueAbstraite{
 
-     DefaultTableModel modeleJTableCIO = new ModelTableCIO();
+     DefaultTableModel modeleJTableCM = new ModelTableCM();
     
-    public VueAfficherCompteCIO(Controleur ctrl) {
+    public VueAfficherCompteCM(Controleur ctrl) {
         super(ctrl);
         initComponents();
         
-        modeleJTableCIO = new ModelTableCIO();
+        modeleJTableCM = new ModelTableCM();
            
-        jTableCIO.setModel(modeleJTableCIO);
+        jTableCM.setModel(modeleJTableCM);
         
-        jTableCIO.setDragEnabled(true);
-        jTableCIO.setDropMode(DropMode.INSERT_ROWS);
-        jTableCIO.setTransferHandler(new TableRowTransferHandler(jTableCIO));
+        jTableCM.setDragEnabled(true);
+        jTableCM.setDropMode(DropMode.INSERT_ROWS);
+        jTableCM.setTransferHandler(new TableRowTransferHandler(jTableCM));
                 
     }
     
@@ -61,7 +61,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTableCIO = new javax.swing.JTable();
+        jTableCM = new javax.swing.JTable();
         jLabelSoldeCompteCIO = new javax.swing.JLabel();
         jTextFieldSoldeCompteCIO = new javax.swing.JTextField();
         jLabelSoldeCompteCIOSansAnticipation = new javax.swing.JLabel();
@@ -87,7 +87,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTableCIO.setModel(new javax.swing.table.DefaultTableModel(
+        jTableCM.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -98,10 +98,10 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
             }
         ));
-        jTableCIO.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        jTableCIO.setRowHeight(30);
-        jTableCIO.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTableCIO);
+        jTableCM.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTableCM.setRowHeight(30);
+        jTableCM.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(jTableCM);
 
         jLabelSoldeCompteCIO.setText("Solde du compte :");
 
@@ -304,7 +304,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
     private void jMenuItemAjouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAjouterActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).afficherAjouterEnregistrement();
+            ((CtrlAfficherCompteCM)controleur).afficherAjouterEnregistrement();
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -316,7 +316,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
     private void jMenuItemCMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCMActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).afficherAfficherCompteCM();
+            ((CtrlAfficherCompteCM)controleur).afficherAfficherCompteCM();
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -324,32 +324,32 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
     private void jButtonRecetteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecetteActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).chargerEnregistrementRecpDepAnt(1, "Recette", "FALSE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Recette", "FALSE");
         } catch (DaoException ex) {
-            Logger.getLogger(VueAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonRecetteActionPerformed
 
     private void jButtonDepenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDepenseActionPerformed
        try {
-            ((CtrlAfficherCompteCIO)controleur).chargerEnregistrementRecpDepAnt(1, "Dépense", "FALSE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Dépense", "FALSE");
         } catch (DaoException ex) {
-            Logger.getLogger(VueAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonDepenseActionPerformed
 
     private void jButtonAnticipationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAnticipationActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).chargerEnregistrementAnt(1, "TRUE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementAnt(2, "TRUE");
         } catch (DaoException ex) {
-            Logger.getLogger(VueAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonAnticipationActionPerformed
 
     private void jButtonValiderAnneeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValiderAnneeActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).viderJtableModel();
-            ((CtrlAfficherCompteCIO)controleur).chargerEnregistrement(jYearChooser1.getYear());
+            ((CtrlAfficherCompteCM)controleur).viderJtableModel();
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrement(jYearChooser1.getYear());
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -358,7 +358,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
     private void jButtonAnnulerAnneeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAnnulerAnneeActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).afficherAfficherCompteCIO();
+            ((CtrlAfficherCompteCM)controleur).afficherAfficherCompteCM();
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -370,15 +370,12 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
     private void jMenuItemCIOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCIOActionPerformed
         try {
-            ((CtrlAfficherCompteCIO)controleur).afficherAfficherCompteCIO();
+            ((CtrlAfficherCompteCM)controleur).afficherAfficherCompteCIO();
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCIOActionPerformed
 
-    
-
-  
 
     public JButton getjButtonValiderAnnee() {
         return jButtonValiderAnnee;
@@ -398,12 +395,12 @@ public class VueAfficherCompteCIO extends VueAbstraite{
 
        
     
-    public DefaultTableModel getModeleJTableCIO() {
-        return modeleJTableCIO;
+    public DefaultTableModel getModeleJTableCM() {
+        return modeleJTableCM;
     }
 
-    public void setModeleJTableCIO(DefaultTableModel modeleJTableCIO) {
-        this.modeleJTableCIO = modeleJTableCIO;
+    public void setModeleJTableCM(DefaultTableModel modeleJTableCM) {
+        this.modeleJTableCM = modeleJTableCM;
     }
 
     public JMenu getjMenuAfficher() {
@@ -494,12 +491,12 @@ public class VueAfficherCompteCIO extends VueAbstraite{
         this.jScrollPane1 = jScrollPane1;
     }
 
-    public JTable getjTableCIO() {
-        return jTableCIO;
+    public JTable getjTableCM() {
+        return jTableCM;
     }
 
-    public void setjTableCIO(JTable jTableCIO) {
-        this.jTableCIO = jTableCIO;
+    public void setjTableCM(JTable jTableCM) {
+        this.jTableCM = jTableCM;
     }
 
     public JLabel getjLabelSoldeCompteCIO() {
@@ -596,7 +593,7 @@ public class VueAfficherCompteCIO extends VueAbstraite{
     private javax.swing.JMenuItem jMenuItemQuitter;
     private javax.swing.JPanel jPanelLegende;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTableCIO;
+    private javax.swing.JTable jTableCM;
     private javax.swing.JTextField jTextFieldSoldeCompteCIO;
     private javax.swing.JTextField jTextFieldSoldeCompteCIOSansAnticipation;
     private com.toedter.calendar.JYearChooser jYearChooser1;

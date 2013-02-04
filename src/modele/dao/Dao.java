@@ -53,7 +53,7 @@ public abstract class Dao {
    private PreparedStatement mettreAJourOrdreInfSup;
    private PreparedStatement compterNbOrdreInf;
    private PreparedStatement compterNbOrdreSup;
-   private PreparedStatement lireIdEnrFromOrdre;
+   private PreparedStatement lireIdEnrFromOrdreCompte;
    private PreparedStatement mettreAJourLesSoldes;
    private PreparedStatement lireNouveauSoldeFromOrdre;
    private PreparedStatement lireMontantFromOrdre;
@@ -93,8 +93,8 @@ public abstract class Dao {
            ajouterLibelle = cnx.prepareStatement("INSERT INTO LIBELLE VALUES (?, ?)");
            recupereDernierIdLibelle = cnx.prepareStatement("SELECT MAX(ID) FROM LIBELLE");
            mettreAJourEnregistrement = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_COMPTE = ?, ID_MOTIF = ?, ID_ETAT = ?, RECETTEDEPENSE = ?, DATEENREGISTREMENT = ?, MONTANT = ?, ANCIENSOLDE =?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, NUMCHQ = ?, ANTICIPATION = ? WHERE ID = ? ");
-           mettreAJourEnregistrementFromOrdre= cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_MOTIF = ?, ID_ETAT = ?, DATEENREGISTREMENT = ?, MONTANT = ?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, ANTICIPATION = ? WHERE ORDRE = ? ");
-           recupererAncienDernierSolde = cnx.prepareStatement("SELECT ANCIENSOLDE  FROM ENREGISTREMENT WHERE ID IN (SELECT MAX (ID) FROM ENregistrement)");
+           mettreAJourEnregistrementFromOrdre= cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_MOTIF = ?, ID_ETAT = ?, DATEENREGISTREMENT = ?, MONTANT = ?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, ANTICIPATION = ? WHERE ORDRE = ? AND ID_COMPTE = ?");
+           recupererAncienDernierSolde = cnx.prepareStatement("SELECT ANCIENSOLDE  FROM ENREGISTREMENT WHERE ID_COMPTE = ? AND ID IN (SELECT MAX (ID) FROM ENREGISTREMENT)");
            recupererDernierSoldeRemiseCheque = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ID = ? AND ID_COMPTE = ?");
            lireTousLesEnregistrements = cnx.prepareStatement("SELECT * FROM ENREGISTREMENT "
                    + "INNER JOIN MOTIF ON ID_MOTIF = MOTIF.ID "
@@ -124,23 +124,23 @@ public abstract class Dao {
                    + "WHERE ID_COMPTE = ? "
                    + "AND ANTICIPATION = ? "
                    + "ORDER BY ORDRE");
-           recupererDernierOrdre = cnx.prepareStatement("SELECT MAX(ORDRE) FROM ENREGISTREMENT");
-           mettreAJourOrdre = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ORDRE = ? WHERE ORDRE = ?");
-           mettreAJourOrdreInfSup = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ORDRE = ? WHERE ORDRE = ? AND ID = ?");
-           compterNbOrdreInf = cnx.prepareStatement("SELECT COUNT(*) FROM ENREGISTREMENT WHERE ORDRE < ?");
-           compterNbOrdreSup = cnx.prepareStatement("SELECT COUNT(*) FROM ENREGISTREMENT WHERE ORDRE > ?");
-           lireIdEnrFromOrdre = cnx.prepareStatement("SELECT ID FROM ENREGISTREMENT WHERE ORDRE = ?");
+           recupererDernierOrdre = cnx.prepareStatement("SELECT MAX(ORDRE) FROM ENREGISTREMENT WHERE ID_COMPTE = ?");
+           mettreAJourOrdre = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ORDRE = ? WHERE ORDRE = ? AND ID_COMPTE = ?");
+           mettreAJourOrdreInfSup = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ORDRE = ? WHERE ORDRE = ? AND ID = ? AND ID_COMPTE = ?");
+           compterNbOrdreInf = cnx.prepareStatement("SELECT COUNT(*) FROM ENREGISTREMENT WHERE ID_COMPTE = ? AND ORDRE < ?");
+           compterNbOrdreSup = cnx.prepareStatement("SELECT COUNT(*) FROM ENREGISTREMENT WHERE ID_COMPTE = ? AND ORDRE > ?");
+           lireIdEnrFromOrdreCompte = cnx.prepareStatement("SELECT ID FROM ENREGISTREMENT WHERE ORDRE = ? AND ID_COMPTE = ?");
            mettreAJourLesSoldes = cnx.prepareStatement("UPDATE ENREGISTREMENT SET NOUVEAUSOLDE = ?, ANCIENSOLDE = ? WHERE ID_COMPTE = ? AND ORDRE = ?");
-           lireNouveauSoldeFromOrdre = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ORDRE = ?");
-           lireMontantFromOrdre = cnx.prepareStatement("SELECT MONTANT FROM ENREGISTREMENT WHERE ORDRE = ?");
-           recupererDernierSolde = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ORDRE = SELECT MAX(ORDRE) FROM ENREGISTREMENT");
-           verifierRecDep = cnx.prepareStatement("SELECT RECETTEDEPENSE FROM ENREGISTREMENT WHERE ORDRE = ?");
+           lireNouveauSoldeFromOrdre = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ORDRE = ? AND ID_COMPTE = ?");
+           lireMontantFromOrdre = cnx.prepareStatement("SELECT MONTANT FROM ENREGISTREMENT WHERE ORDRE = ? AND ID_COMPTE = ?");
+           recupererDernierSolde = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ORDRE = (SELECT MAX(ORDRE) FROM ENREGISTREMENT) AND ID_COMPTE = ?");
+           verifierRecDep = cnx.prepareStatement("SELECT RECETTEDEPENSE FROM ENREGISTREMENT WHERE ORDRE = ? AND ID_COMPTE = ?");
            compterNbEnregistrement = cnx.prepareStatement("SELECT COUNT(*) FROM ENREGISTREMENT");
            lireIdLibelleFromLibelle = cnx.prepareStatement("SELECT ID FROM LIBELLE WHERE LIBELLE = ?");
            lireIdModeReglementFromLibelle = cnx.prepareStatement("SELECT ID FROM MODEREGLEMENT WHERE LIBELLE = ?");
            lireIdEtatFromLibelle = cnx.prepareStatement("SELECT ID FROM ETAT WHERE LIBELLE = ?");
            lireIdMotifFromLibelle = cnx.prepareStatement("SELECT ID FROM MOTIF WHERE LIBELLE = ?");
-           supprimerEnregistrementFromOrdre = cnx.prepareStatement("DELETE FROM ENREGISTREMENT WHERE ORDRE = ?");
+           supprimerEnregistrementFromOrdre = cnx.prepareStatement("DELETE FROM ENREGISTREMENT WHERE ORDRE = ? AND ID_COMPTE = ?");
            
            
            
@@ -340,8 +340,9 @@ public abstract class Dao {
         }
     }
     
-    public Float recupererDernierSolde() throws DaoException{
-        try {                    
+    public Float recupererDernierSolde(Integer idCompte) throws DaoException{
+        try {        
+            recupererDernierSolde.setInt(1, idCompte);
             ResultSet rs = recupererDernierSolde.executeQuery();
             Float dernierSolde = null;
             if (rs.next()) {
@@ -458,9 +459,10 @@ public abstract class Dao {
         }
     }
     
-    public Float lireNouveauSoldeFromOrdre(Integer ordre) throws DaoException{
+    public Float lireNouveauSoldeFromOrdre(Integer ordre, Integer idCompte) throws DaoException{
         try {    
             lireNouveauSoldeFromOrdre.setInt(1, ordre);
+            lireNouveauSoldeFromOrdre.setInt(2, idCompte);
             ResultSet rs = lireNouveauSoldeFromOrdre.executeQuery();
             Float nouveauSolde = null;
             if (rs.next()) {
@@ -473,9 +475,10 @@ public abstract class Dao {
         }
     }
     
-    public Float lireMontantFromOrdre(Integer ordre) throws DaoException{
+    public Float lireMontantFromOrdre(Integer ordre, Integer idCompte) throws DaoException{
         try {    
             lireMontantFromOrdre.setInt(1, ordre);
+            lireMontantFromOrdre.setInt(2, idCompte);
             ResultSet rs = lireMontantFromOrdre.executeQuery();
             Float montant = null;
             if (rs.next()) {
@@ -488,9 +491,10 @@ public abstract class Dao {
         }
     }
     
-    public Boolean verifierRecDep(Integer ordre) throws DaoException{
+    public Boolean verifierRecDep(Integer ordre, Integer idCompte) throws DaoException{
         try {    
             verifierRecDep.setInt(1, ordre);
+            verifierRecDep.setInt(2, idCompte);
             ResultSet rs = verifierRecDep.executeQuery();
             Boolean depense = null;
             if (rs.next()) {
@@ -508,10 +512,10 @@ public abstract class Dao {
         }
     }
     
-    public void mettreAJourOrdre(Integer to, Integer from) throws DaoException{
+    public void mettreAJourOrdreCIO(Integer to, Integer from) throws DaoException{
         
-        Integer nbInf = compterNbOrdreIf(from);
-        Integer nbSup = compterNbOrdreSup(from);
+        Integer nbInf = compterNbOrdreIf(from, 1);
+        Integer nbSup = compterNbOrdreSup(from, 1);
         
         try { 
             
@@ -527,6 +531,7 @@ public abstract class Dao {
               
                 mettreAJourOrdre.setInt(1, to);
                 mettreAJourOrdre.setInt(2, from);
+                mettreAJourOrdre.setInt(3, 1);
                 
                 mettreAJourOrdre.executeUpdate(); 
                 
@@ -534,17 +539,17 @@ public abstract class Dao {
                     
                    j = j + 1;
                     
-                    Integer idEnr = lireIdEnrFromOrdre(j-1);
+                    Integer idEnr = lireIdEnrFromOrdreCompte(j-1, 1);
                     
-                    mettreAJourOrdreInfSup(j, j-1, idEnr);
+                    mettreAJourOrdreInfSup(j, j-1, idEnr, 2);
                 
                 }
                 
                 if(k == 1){
                     
-                    nouveauSolde = lireMontantFromOrdre(k+nbSup);
+                    nouveauSolde = lireMontantFromOrdre(k+nbSup, 1);
                     
-                    if(verifierRecDep(k) == false){
+                    if(verifierRecDep(k, 1) == false){
                         
                             mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 1, k);
                             
@@ -555,13 +560,13 @@ public abstract class Dao {
                     }
                 }else{
                     
-                    if(verifierRecDep(k) == false){
+                    if(verifierRecDep(k, 1) == false){
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1)+lireMontantFromOrdre(k), lireNouveauSoldeFromOrdre(k-1), 1, k);
+                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)+lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
                     
                     }else{
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1)-lireMontantFromOrdre(k), lireNouveauSoldeFromOrdre(k-1), 1, k);
+                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)-lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
                   
                     } 
       
@@ -572,13 +577,13 @@ public abstract class Dao {
                        
                        try{
                            
-                           if(verifierRecDep(ordre) == false){
+                           if(verifierRecDep(ordre, 1) == false){
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i)+lireMontantFromOrdre(l+(i+1)), lireNouveauSoldeFromOrdre(l+i), 1, ordre);
+                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)+lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
                                 
                            }else{
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i)-lireMontantFromOrdre(l+(i+1)), lireNouveauSoldeFromOrdre(l+i), 1, ordre);
+                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)-lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
                                 
                            }
                            
@@ -591,7 +596,7 @@ public abstract class Dao {
                    }
                 }
                 
-                mettreAJourSoldeCompte(1, recupererDernierSolde());
+                mettreAJourSoldeCompte(1, recupererDernierSolde(1));
                 
             }else{
                 
@@ -605,23 +610,25 @@ public abstract class Dao {
 
                     mettreAJourOrdre.setInt(1, to);
                     mettreAJourOrdre.setInt(2, from);
+                    mettreAJourOrdre.setInt(3, 1);
+                    
 
                     mettreAJourOrdre.executeUpdate();
 
                     for(int i=0; i<=compterNbEnregistrement() ; i++){
 
                         j = j + 1;
-                        Integer idEnr  = lireIdEnrFromOrdre(j);
+                        Integer idEnr  = lireIdEnrFromOrdreCompte(j, 1);
                         
                         try{
                             
                            if(j<=to){
 
-                                mettreAJourOrdreInfSup(j-1, j, idEnr);
+                                mettreAJourOrdreInfSup(j-1, j, idEnr, 2);
 
                             }else{
 
-                                mettreAJourOrdreInfSup(j, j, idEnr);
+                                mettreAJourOrdreInfSup(j, j, idEnr, 2);
 
                             } 
                            
@@ -632,9 +639,9 @@ public abstract class Dao {
                     
                     if(k == 1){
 
-                        nouveauSolde = lireMontantFromOrdre(k+nbInf);
+                        nouveauSolde = lireMontantFromOrdre(k+nbInf, 1);
                         
-                        if(verifierRecDep(k) == false){
+                        if(verifierRecDep(k, 1) == false){
                             
                             mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 1, k);
                                 
@@ -646,13 +653,13 @@ public abstract class Dao {
                         
                     }else{
                         
-                        if(verifierRecDep(k) == false){
+                        if(verifierRecDep(k, 1) == false){
                             
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1)+lireMontantFromOrdre(k), lireNouveauSoldeFromOrdre(k-1), 1, k);
+                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)+lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
                             
                         }else{
                             
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1)-lireMontantFromOrdre(k), lireNouveauSoldeFromOrdre(k-1), 1, k); 
+                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)-lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k); 
                             
                         } 
 
@@ -663,13 +670,13 @@ public abstract class Dao {
 
                            try{
 
-                               if(verifierRecDep(ordre) == false){
+                               if(verifierRecDep(ordre, 1) == false){
                                    
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i)+lireMontantFromOrdre(l+(i+1)), lireNouveauSoldeFromOrdre(l+i), 1, ordre);
+                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)+lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
                                     
                                }else{
                                    
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i)-lireMontantFromOrdre(l+(i+1)), lireNouveauSoldeFromOrdre(l+i), 1, ordre);
+                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)-lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
                                     
                                }
 
@@ -687,7 +694,197 @@ public abstract class Dao {
                     }
                 }
                 
-                mettreAJourSoldeCompte(1, recupererDernierSolde());
+                mettreAJourSoldeCompte(1, recupererDernierSolde(1));
+
+            }
+        } catch (SQLException ex) {
+            throw new DaoException("DAO - mettreAJourOrdre : pb JDBC\n" + ex.getMessage());
+        }
+    }
+    
+    public void mettreAJourOrdreCM(Integer to, Integer from) throws DaoException{
+        
+        Integer nbInf = compterNbOrdreIf(from, 2);
+        Integer nbSup = compterNbOrdreSup(from, 2);
+        
+        try { 
+            
+            
+            
+            if(from > to){
+                
+                int j = to;
+                int k = to;
+                
+                Float nouveauSolde;
+                Float ancienSolde;
+              
+                mettreAJourOrdre.setInt(1, to);
+                mettreAJourOrdre.setInt(2, from);
+                mettreAJourOrdre.setInt(3, 2);
+                
+                mettreAJourOrdre.executeUpdate(); 
+                
+                for(to=to;to<=nbInf;to++){
+                    
+                   j = j + 1;
+                    
+                    Integer idEnr = lireIdEnrFromOrdreCompte(j-1, 2);
+                    
+                    mettreAJourOrdreInfSup(j, j-1, idEnr, 2);
+                
+                }
+                
+                if(k == 1){
+                    
+                    nouveauSolde = lireMontantFromOrdre(k+nbSup, 2);
+                    
+                    if(verifierRecDep(k, 2) == false){
+                        
+                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 2, k);
+                            
+                    }else{
+                        
+                        mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 2, k);
+                        
+                    }
+                }else{
+                    
+                    if(verifierRecDep(k, 2) == false){
+                        
+                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)+lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
+                    
+                    }else{
+                        
+                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)-lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
+                  
+                    } 
+      
+                    for(int i=0; i<k ; i++){
+
+                       int l = k;
+                       int ordre = k + i + 1; 
+                       
+                       try{
+                           
+                           if(verifierRecDep(ordre, 2) == false){
+                               
+                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)+lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
+                                
+                           }else{
+                               
+                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)-lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
+                                
+                           }
+                           
+                       }catch(Exception e){
+                           
+                       }
+                       
+                       l = l - 1;
+
+                   }
+                }
+                
+                mettreAJourSoldeCompte(2, recupererDernierSolde(2));
+                
+            }else{
+                
+                if(from < to){
+
+                    int j = from;
+                    int k = from;
+
+                    Float nouveauSolde;
+                    Float ancienSolde = null;
+
+                    mettreAJourOrdre.setInt(1, to);
+                    mettreAJourOrdre.setInt(2, from);
+                    mettreAJourOrdre.setInt(3, 2);
+                    
+
+                    mettreAJourOrdre.executeUpdate();
+
+                    for(int i=0; i<=compterNbEnregistrement() ; i++){
+
+                        j = j + 1;
+                        Integer idEnr  = lireIdEnrFromOrdreCompte(j, 2);
+                        
+                        try{
+                            
+                           if(j<=to){
+
+                                mettreAJourOrdreInfSup(j-1, j, idEnr, 2);
+
+                            }else{
+
+                                mettreAJourOrdreInfSup(j, j, idEnr, 2);
+
+                            } 
+                           
+                        }catch(Exception e){
+
+                        }
+                    }
+                    
+                    if(k == 1){
+
+                        nouveauSolde = lireMontantFromOrdre(k+nbInf, 2);
+                        
+                        if(verifierRecDep(k, 2) == false){
+                            
+                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 2, k);
+                                
+                        }else{
+                            
+                            mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 2, k);
+                            
+                        }
+                        
+                    }else{
+                        
+                        if(verifierRecDep(k, 2) == false){
+                            
+                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)+lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
+                            
+                        }else{
+                            
+                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)-lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k); 
+                            
+                        } 
+
+                        for(int i=0; i<=compterNbEnregistrement() ; i++){
+
+                           int l = k;
+                           int ordre = k + i + 1; 
+
+                           try{
+
+                               if(verifierRecDep(ordre, 2) == false){
+                                   
+                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)+lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
+                                    
+                               }else{
+                                   
+                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)-lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
+                                    
+                               }
+
+                           }catch(Exception e){
+
+                           }
+
+                            if(j<=to){
+                                l = l - 1;
+                            }else{
+                                l = l + 1;
+                            }
+
+                       }
+                    }
+                }
+                
+                mettreAJourSoldeCompte(2, recupererDernierSolde(2));
 
             }
         } catch (SQLException ex) {
@@ -722,9 +919,10 @@ public abstract class Dao {
         }
     }
     
-    public Integer compterNbOrdreIf(Integer to) throws DaoException{
+    public Integer compterNbOrdreIf(Integer to, Integer idCompte) throws DaoException{
         try {                  
-            compterNbOrdreInf.setInt(1, to);
+            compterNbOrdreInf.setInt(2, to);
+            compterNbOrdreInf.setInt(1, idCompte);
             ResultSet rs = compterNbOrdreInf.executeQuery();
             Integer nbInf = null;
             if (rs.next()) {
@@ -737,9 +935,10 @@ public abstract class Dao {
         }
     }
     
-    public Integer compterNbOrdreSup(Integer to) throws DaoException{
+    public Integer compterNbOrdreSup(Integer to, Integer idCompte) throws DaoException{
         try {                  
-            compterNbOrdreSup.setInt(1, to);
+            compterNbOrdreSup.setInt(2, to);
+            compterNbOrdreSup.setInt(1, idCompte);
             ResultSet rs = compterNbOrdreSup.executeQuery();
             Integer nbSup = null;
             if (rs.next()) {
@@ -777,9 +976,10 @@ public abstract class Dao {
         }        
     }
     
-    public int modifierUnEnregistrementFromOrdre(Integer ordre, Integer idLibelle, Integer idModeReglement, Integer idEtat, Integer idMotif, String DateEnr, Float montant, Float nouveauSolde, String dateFacture, Boolean anticipation) throws DaoException {
+    public int modifierUnEnregistrementFromOrdre(Integer ordre, Integer idLibelle, Integer idModeReglement, Integer idEtat, Integer idMotif, String DateEnr, Float montant, Float nouveauSolde, String dateFacture, Boolean anticipation, Integer idCompte) throws DaoException {
         try {
             
+            mettreAJourEnregistrementFromOrdre.setInt(11, idCompte);
             mettreAJourEnregistrementFromOrdre.setInt(10, ordre);
             mettreAJourEnregistrementFromOrdre.setInt(1, idLibelle);
             mettreAJourEnregistrementFromOrdre.setInt(2, idModeReglement);
@@ -798,8 +998,9 @@ public abstract class Dao {
         }        
     }
     
-    public Float recupererAncienDernierSolde() throws DaoException{
-        try {                    
+    public Float recupererAncienDernierSolde(Integer idCompte) throws DaoException{
+        try {     
+            recupererAncienDernierSolde.setInt(1, idCompte);
             ResultSet rs = recupererAncienDernierSolde.executeQuery();
             Float solde = null;
             if (rs.next()) {
@@ -902,8 +1103,9 @@ public abstract class Dao {
         }
     }
     
-    public Integer recupererDernierOrdre() throws DaoException{
-        try {                    
+    public Integer recupererDernierOrdre(Integer idCompte) throws DaoException{
+        try {    
+            recupererDernierOrdre.setInt(1, idCompte);
             ResultSet rs = recupererDernierOrdre.executeQuery();
             Integer ordre = null;
             if (rs.next()) {
@@ -916,10 +1118,11 @@ public abstract class Dao {
         }
     }
     
-    public Integer lireIdEnrFromOrdre(Integer ordre) throws DaoException{
+    public Integer lireIdEnrFromOrdreCompte(Integer ordre, Integer idCompte) throws DaoException{
         try {                    
-            lireIdEnrFromOrdre.setInt(1, ordre);
-            ResultSet rs = lireIdEnrFromOrdre.executeQuery();
+            lireIdEnrFromOrdreCompte.setInt(1, ordre);
+            lireIdEnrFromOrdreCompte.setInt(2, idCompte);
+            ResultSet rs = lireIdEnrFromOrdreCompte.executeQuery();
             Integer id = null;
             if (rs.next()) {
                 id = rs.getInt(1);
@@ -988,12 +1191,13 @@ public abstract class Dao {
         }
     }
     
-    public int mettreAJourOrdreInfSup(Integer nouvelOrdre, Integer ancienOrdre, Integer id) throws DaoException {
+    public int mettreAJourOrdreInfSup(Integer nouvelOrdre, Integer ancienOrdre, Integer id, Integer idCompte) throws DaoException {
         try {
             
             mettreAJourOrdreInfSup.setInt(1, nouvelOrdre);
             mettreAJourOrdreInfSup.setInt(2, ancienOrdre);
             mettreAJourOrdreInfSup.setInt(3, id);
+            mettreAJourOrdreInfSup.setInt(4, idCompte);
                     
             int nb= mettreAJourOrdreInfSup.executeUpdate();
             return nb;

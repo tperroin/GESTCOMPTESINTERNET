@@ -424,6 +424,11 @@ public class VueAjouterEnregistrement extends VueAbstraite {
 
         jMenuItemCM.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemCM.setText("Compte Crédit Mutuel");
+        jMenuItemCM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCMActionPerformed(evt);
+            }
+        });
         jMenuAfficher.add(jMenuItemCM);
 
         jMenuBarMenu.add(jMenuAfficher);
@@ -638,7 +643,7 @@ public class VueAjouterEnregistrement extends VueAbstraite {
                     .addComponent(jButtonModifier)
                     .addComponent(jButtonAfficher)
                     .addComponent(jButtonValiderModifier))
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
 
         pack();
@@ -797,6 +802,14 @@ public class VueAjouterEnregistrement extends VueAbstraite {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonAfficherActionPerformed
+
+    private void jMenuItemCMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCMActionPerformed
+       try {
+            ((CtrlAjouterEnregistrement)controleur).afficherAfficherCompteCM();
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemCMActionPerformed
 
     public DefaultComboBoxModel getModeleJComboBoxCompte() {
         return modeleJComboBoxCompte;

@@ -29,8 +29,8 @@ import metier.Motif;
 import modele.dao.DaoException;
 import modele.dao.DaoH2;
 import modele.jtable.ButtonColumn;
-import modele.jtable.ModelTableCIO;
-import vues.VueAfficherCompteCIO;
+import modele.jtable.ModelTableCM;
+import vues.VueAfficherCompteCM;
 import vues.VueAjouterEnregistrement;
 
 
@@ -38,29 +38,29 @@ import vues.VueAjouterEnregistrement;
  *
  * @author btssio
  */
-public class CtrlAfficherCompteCIO extends Controleur {
+public class CtrlAfficherCompteCM extends Controleur {
     
     DaoH2 dao = null;
     
-    CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
     CtrlAfficherCompteCM ctrlAfficherCompteCM;
     CtrlAjouterEnregistrement ctrlAjouterEnregistrement;
+    CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
     
-    public CtrlAfficherCompteCIO(Controleur ctrl) throws DaoException {
+    public CtrlAfficherCompteCM(Controleur ctrl) throws DaoException {
         super(ctrl);
         // Ouvrir une connexion JDBC vers la base de données visée
         dao = new DaoH2("gestComptes", "sa", "");
         try {
             dao.connecter();
             // initialiser l'interface graphique
-            setVue(new VueAfficherCompteCIO(this));
+            setVue(new VueAfficherCompteCM(this));
             this.afficherVue();
-            chargerSoldeCompteCIO();
+            chargerSoldeCompteCM();
             afficherColonnes();
             
             
         } catch (DaoException ex) {
-           JOptionPane.showMessageDialog(vue, "CtrlAfficherCompteCIO - instanciation - " + ex.getMessage(), "Afficher", JOptionPane.ERROR_MESSAGE);
+           JOptionPane.showMessageDialog(vue, "CtrlAfficherCompteCM - instanciation - " + ex.getMessage(), "Afficher", JOptionPane.ERROR_MESSAGE);
         }
         
     }
@@ -101,31 +101,31 @@ public class CtrlAfficherCompteCIO extends Controleur {
     
     public void afficherColonnes(){
         
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Date Enregistrement");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Libellé");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Motif");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Date facture");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Mode de règlement");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Montant");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Solde");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Etat");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Anticipation");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Modifier");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("RecDep");
-        ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addColumn("Supprimer");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Date Enregistrement");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Libellé");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Motif");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Date facture");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Mode de règlement");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Montant");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Solde");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Etat");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Anticipation");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Modifier");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("RecDep");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Supprimer");
     }
     
     public void chargerEnregistrement(int annee) throws DaoException {
         
         
-        List<Enregistrement> desEnregistrements = dao.lireTousLesEnregistrements(1, "%"+String.valueOf(annee) +"%");
+        List<Enregistrement> desEnregistrements = dao.lireTousLesEnregistrements(2, "%"+String.valueOf(annee) +"%");
         
         
         
         
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-            ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
+            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
         }
         
         aspectJtable();
@@ -139,7 +139,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
+             ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
         }
         
         aspectJtable();
@@ -153,7 +153,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-             ((VueAfficherCompteCIO)vue).getModeleJTableCIO().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
+             ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X"});   
         }
         
         aspectJtable();
@@ -163,17 +163,17 @@ public class CtrlAfficherCompteCIO extends Controleur {
     Action supprimer = new AbstractAction() {
 
         public void actionPerformed(ActionEvent e) {
-            int rep = JOptionPane.showConfirmDialog(((VueAfficherCompteCIO)vue), "Supprimer l'enregistrement\nEtes-vous sûr(e) ?", "Affichage des enregistrements", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int rep = JOptionPane.showConfirmDialog(((VueAfficherCompteCM)vue), "Supprimer l'enregistrement\nEtes-vous sûr(e) ?", "Affichage des enregistrements", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (rep == JOptionPane.YES_OPTION) {
             JTable table = (JTable)e.getSource();
             int modelRow = Integer.valueOf( e.getActionCommand() );
-            ((ModelTableCIO)table.getModel()).removeRow(modelRow);
+            ((ModelTableCM)table.getModel()).removeRow(modelRow);
             int nbEnregistrement = 0;
             try {
                 dao.supprimerEnregistrementFromOrdre(modelRow + 1);
                 nbEnregistrement = dao.compterNbEnregistrement();
             } catch (DaoException ex) {
-                Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
             int i;
             int j = modelRow;
@@ -184,22 +184,22 @@ public class CtrlAfficherCompteCIO extends Controleur {
                     Float ancienSolde = null;
                     Float floatMontant = null;
                     
-                    floatMontant = dao.lireMontantFromOrdre(i+1, 1);
-                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i-1, 1);
+                    floatMontant = dao.lireMontantFromOrdre(i+1, 2);
+                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i-1, 2);
                     
-                    if(dao.verifierRecDep(i+1, 1) == true){
+                    if(dao.verifierRecDep(i+1, 2) == true){
                         nouveauSolde = ancienSolde - floatMontant;
                     }else{
                         nouveauSolde = floatMontant + ancienSolde;
                     }
                     
-                    Integer idEnr = dao.lireIdEnrFromOrdreCompte(i+1, 1);
+                    Integer idEnr = dao.lireIdEnrFromOrdreCompte(i+1, 2);
                     
-                    dao.mettreAJourOrdreInfSup(i,i+1 , idEnr, 1);
-                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 1, i);
+                    dao.mettreAJourOrdreInfSup(i,i+1 , idEnr, 2);
+                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 2, i);
                     
                 } catch (DaoException ex) {
-                    Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
                 }
                     
                 
@@ -216,9 +216,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
             
             int modelRow = Integer.valueOf( e.getActionCommand() );
             
-            JTable table = ((VueAfficherCompteCIO)vue).getjTableCIO();
-            
-            System.out.print("modelRow : " + modelRow);
+            JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
             
             Object date = table.getValueAt(modelRow, 0);
             Object libelle = table.getValueAt(modelRow, 1);
@@ -245,7 +243,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
                 idEtat = dao.lireIdEtatFromLibelle(etat.toString());
                 idMotif = dao.lireIdMotifFromLibelle(motif.toString());
                 floatMontant = Float.parseFloat(montant.toString());
-                ancienSolde = dao.lireNouveauSoldeFromOrdre(modelRow+1, 1);
+                ancienSolde = dao.lireNouveauSoldeFromOrdre(modelRow+1, 2);
                 nbEnregistrement = dao.compterNbEnregistrement();
                 
                 if(idLibelle == null){
@@ -255,18 +253,18 @@ public class CtrlAfficherCompteCIO extends Controleur {
                 }
                                 
             } catch (DaoException ex) {
-                Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
             try {
                 if("Dépense".equals(recdep.toString())){
-                    dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), floatMontant, ancienSolde-floatMontant, dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), 1);
+                    dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), floatMontant, ancienSolde-floatMontant, dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), 2);
            
-                }else{System.out.print(modelRow+1+ idLibelle+idModeReglement + idEtat+ idMotif+ date.toString()+ floatMontant+ ancienSolde+floatMontant+ dateFacture.toString()+ Boolean.parseBoolean(anticipation.toString())+ 1);
-          
-                    dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), floatMontant, ancienSolde+floatMontant, dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), 1);
-                 }
+                }else{
+                    dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), floatMontant, ancienSolde+floatMontant, dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), 2);
+           
+                }
             } catch (DaoException ex) {
-                Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
             int i;
             
@@ -275,25 +273,25 @@ public class CtrlAfficherCompteCIO extends Controleur {
                 try {
                     
                     
-                    floatMontant = dao.lireMontantFromOrdre(i+1, 1);
-                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i, 1);
+                    floatMontant = dao.lireMontantFromOrdre(i+1, 2);
+                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i, 2);
                     Float nouveauSolde = null;
                     
-                    if(dao.verifierRecDep(i+1, 1) == true){
+                    if(dao.verifierRecDep(i+1, 2) == true){
                         nouveauSolde = ancienSolde - floatMontant;
                     }else{
                         nouveauSolde = floatMontant + ancienSolde;
                     }
                     
-                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 1, i+1);
+                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 2, i+1);
                 } catch (DaoException ex) {
-                    Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             try {
-                dao.mettreAJourSoldeCompte(1, dao.recupererDernierSolde(1));
+                dao.mettreAJourSoldeCompte(2, dao.recupererDernierSolde(2));
             } catch (DaoException ex) {
-                Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     };
@@ -301,7 +299,7 @@ public class CtrlAfficherCompteCIO extends Controleur {
     public void aspectJtable(){
         
         
-        JTable table = ((VueAfficherCompteCIO)vue).getjTableCIO();
+        JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
         
         table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
                
@@ -331,21 +329,21 @@ public class CtrlAfficherCompteCIO extends Controleur {
     
 
     
-    public void chargerSoldeCompteCIO() throws DaoException{
+    public void chargerSoldeCompteCM() throws DaoException{
         
-        Float soldeCIO = dao.lireSoldeCompte(1);
-        Float soldeCIOSansAnticipation = dao.lireSoldeCompteSansAnticipation(1);
+        Float soldeCM = dao.lireSoldeCompte(2);
+        Float soldeCMSansAnticipation = dao.lireSoldeCompteSansAnticipation(2);
         
-        ((VueAfficherCompteCIO)vue).getjTextFieldSoldeCompteCIO().setText(soldeCIO.toString());
+        ((VueAfficherCompteCM)vue).getjTextFieldSoldeCompteCIO().setText(soldeCM.toString());
         
-        ((VueAfficherCompteCIO)vue).getjTextFieldSoldeCompteCIOSansAnticipation().setText(soldeCIOSansAnticipation.toString());
+        ((VueAfficherCompteCM)vue).getjTextFieldSoldeCompteCIOSansAnticipation().setText(soldeCMSansAnticipation.toString());
         
         
     }
     
     public void viderJtableModel(){
         
-        DefaultTableModel model = ((VueAfficherCompteCIO)vue).getModeleJTableCIO();
+        DefaultTableModel model = ((VueAfficherCompteCM)vue).getModeleJTableCM();
         
         for(int i = model.getRowCount(); i > 0; --i)
             model.removeRow(i-1);

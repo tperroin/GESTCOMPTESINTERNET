@@ -22,6 +22,8 @@ public class CtrlAccueil extends Controleur {
     CtrlAjouterEnregistrement ctrlAjouterEnregistrement;
     CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
     CtrlAfficherCompteCM ctrlAfficherCompteCM;
+    CtrlArchivageCIO ctrlArchivageCIO;
+    CtrlArchivageCM ctrlArchivageCM;
 
     public CtrlAccueil(Controleur ctrl) {
         super(ctrl);
@@ -61,6 +63,24 @@ public class CtrlAccueil extends Controleur {
             ctrlAfficherCompteCM = new CtrlAfficherCompteCM(this);
         }else{
             ctrlAfficherCompteCM.afficherVue();
+        }
+        this.cacherVue();
+    }
+    
+    public void afficherArchivageCIO() throws DaoException{
+        if (ctrlArchivageCIO == null){
+            ctrlArchivageCIO = new CtrlArchivageCIO(this);
+        }else{
+            ctrlArchivageCIO.afficherVue();
+        }
+        this.cacherVue();
+    }
+    
+    public void afficherArchivageCM() throws DaoException{
+        if (ctrlArchivageCM == null){
+            ctrlArchivageCM = new CtrlArchivageCM(this);
+        }else{
+            ctrlArchivageCM.afficherVue();
         }
         this.cacherVue();
     }

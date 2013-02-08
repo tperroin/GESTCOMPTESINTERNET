@@ -34,8 +34,8 @@ public class ModelTableCIO extends DefaultTableModel implements Reorderable {
   
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-
-            return true;
+            
+            return columnIndex==0 ? false : true;
     }
   
    public void mettreAJourOrdre(int to, int from) throws DaoException{

@@ -16,6 +16,9 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+N"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/file2.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Ajouter"/>
               </Properties>
               <Events>
@@ -26,6 +29,9 @@
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+Q"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/switch.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Quitter"/>
               </Properties>
@@ -45,6 +51,9 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+1"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/cic3-053351800-2259-28012009-1.jpg"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Compte CIC Ouest"/>
               </Properties>
               <Events>
@@ -55,6 +64,9 @@
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+2"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/12920-skyphon-CreditMutuel.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Compte Cr&#xe9;dit Mutuel"/>
               </Properties>
@@ -71,13 +83,25 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCIOArch">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/cic3-053351800-2259-28012009-1.jpg"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Compte CIC Ouest"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemCIOArchActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemCMArch">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/images/12920-skyphon-CreditMutuel.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Compte Cr&#xe9;dit Mutuel"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemCMArchActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -87,6 +111,9 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="title" type="java.lang.String" value="Ajouter un enregistrement"/>
+    <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+      <Color id="Curseur par d&#xe9;faut"/>
+    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBarMenu"/>
@@ -107,21 +134,57 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="jLabelTitre" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="416" max="-2" attributes="0"/>
-          </Group>
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="135" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="jComboBoxLibelle1" min="-2" pref="250" max="-2" attributes="0"/>
-                                  <Component id="jComboBoxLibelle5" min="-2" pref="250" max="-2" attributes="0"/>
-                                  <Component id="jComboBoxLibelle2" alignment="1" min="-2" pref="250" max="-2" attributes="0"/>
+                                  <Component id="jLabelMotif" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelReDep" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelBanque" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelDateEnregistrement" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelModeRegl" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jComboBoxRecDep" alignment="0" pref="244" max="32767" attributes="0"/>
+                                  <Component id="jComboBoxMotif" max="32767" attributes="0"/>
+                                  <Component id="jComboBoxBanque" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxModRegl" alignment="0" pref="244" max="32767" attributes="0"/>
+                                  <Component id="jDateChooserDateEnregistrement" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="jLabelDateFacture" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabelLibelle" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jRadioButtonRegl" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jRadioButtonLibRestaurant" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jRadioButtonLibFacture" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jRadioButtonLibPret" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jComboBoxLibelle" min="-2" pref="240" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jTextFieldDateFacture" min="-2" pref="250" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="jComboBoxLibelle2" min="-2" pref="250" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxLibelle1" alignment="1" min="-2" pref="250" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxLibelle5" alignment="1" min="-2" pref="250" max="-2" attributes="0"/>
+                                  <Component id="jComboBoxLibelle3" alignment="1" min="-2" pref="248" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -129,119 +192,92 @@
                                       <Component id="jLabelDateFacture5" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jTextFieldDateFacture5" min="-2" pref="250" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabelMontant1" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTextFieldMontant1" min="-2" pref="160" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Component id="jLabelDateFacture1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jTextFieldDateFacture1" min="-2" pref="250" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabelDateFacture2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jTextFieldDateFacture2" min="-2" pref="250" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabelMontant2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jTextFieldMontant2" min="-2" pref="160" max="-2" attributes="0"/>
                                   </Group>
-                                  <Group type="102" attributes="0">
-                                      <Component id="jLabelDateFacture2" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTextFieldDateFacture2" min="-2" pref="250" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabelMontant3" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jTextFieldMontant3" min="-2" pref="160" max="-2" attributes="0"/>
                                   </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabelMontant1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jTextFieldMontant1" min="-2" pref="160" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="jLabelMontant" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabelNumCHQ" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="jLabelMontant" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Component id="jLabelNumCHQ" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jTextFieldNumCHQ" pref="186" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jComboBoxEtat" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jTextFieldMontant" alignment="0" max="32767" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="jLabelValidation" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonAnnuler" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonValiderModifier" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonValider" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonNouveau" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonModifier" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonAfficher" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jComboBoxLibelle3" min="-2" pref="248" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jLabelDateFacture3" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextFieldDateFacture3" min="-2" pref="250" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jLabelMontant4" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextFieldMontant4" min="-2" pref="160" max="-2" attributes="0"/>
+                                  <Component id="jTextFieldMontant" alignment="0" min="-2" pref="79" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="109" max="-2" attributes="0"/>
+                                      <Component id="jLabelDateFacture3" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jTextFieldDateFacture3" min="-2" pref="250" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jLabelMontant4" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jTextFieldMontant4" min="-2" pref="160" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jTextFieldNumCHQ" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jLabelDateFacture" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelMotif" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelReDep" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelBanque" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelDateEnregistrement" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelModeRegl" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabelLibelle" alignment="1" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
+                      <Component id="jLabelValidation" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="jButtonAnnuler" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="jRadioButtonRegl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jRadioButtonLibRestaurant" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jRadioButtonLibFacture" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jRadioButtonLibPret" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jComboBoxLibelle" min="-2" pref="240" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jComboBoxRecDep" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jComboBoxMotif" max="32767" attributes="0"/>
-                              <Component id="jDateChooserDateEnregistrement" max="32767" attributes="0"/>
-                              <Component id="jComboBoxBanque" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
-                              <Component id="jComboBoxModRegl" min="-2" pref="244" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="jTextFieldDateFacture" min="-2" pref="250" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="jButtonValiderModifier" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonValider" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonNouveau" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonModifier" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonAfficher" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="88" max="32767" attributes="0"/>
+              <EmptySpace pref="532" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabelTitre" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabelBanque" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jComboBoxBanque" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -258,90 +294,92 @@
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="jLabelDateEnregistrement" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelModeRegl" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jComboBoxModRegl" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="jLabelLibelle" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jRadioButtonRegl" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="jRadioButtonLibRestaurant" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jRadioButtonLibFacture" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jRadioButtonLibPret" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jComboBoxLibelle" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelDateFacture" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDateFacture" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jComboBoxLibelle5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelDateFacture5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDateFacture5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelMontant1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldMontant1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jComboBoxLibelle1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelDateFacture1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDateFacture1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelMontant2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldMontant2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jComboBoxLibelle2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelDateFacture2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDateFacture2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelMontant3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldMontant3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jComboBoxLibelle3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelDateFacture3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldDateFacture3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelMontant4" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldMontant4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelNumCHQ" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldNumCHQ" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelMontant" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldMontant" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jComboBoxEtat" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelValidation" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonAnnuler" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonValider" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonNouveau" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonModifier" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonAfficher" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButtonValiderModifier" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
                   <Component id="jDateChooserDateEnregistrement" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelDateEnregistrement" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelModeRegl" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jComboBoxModRegl" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="jLabelLibelle" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jRadioButtonRegl" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="jRadioButtonLibRestaurant" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jRadioButtonLibFacture" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jRadioButtonLibPret" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBoxLibelle" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelDateFacture" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldDateFacture" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jComboBoxLibelle5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelDateFacture5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldDateFacture5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelMontant1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldMontant1" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jComboBoxLibelle1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelDateFacture1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldDateFacture1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelMontant2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldMontant2" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jComboBoxLibelle2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelDateFacture2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldDateFacture2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelMontant3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldMontant3" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jComboBoxLibelle3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelDateFacture3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldDateFacture3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelMontant4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldMontant4" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelNumCHQ" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldNumCHQ" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelMontant" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldMontant" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jComboBoxEtat" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabelValidation" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonAnnuler" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonValider" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonNouveau" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonModifier" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonAfficher" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonValiderModifier" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="79" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -428,16 +466,6 @@
     <Component class="javax.swing.JLabel" name="jLabelDateEnregistrement">
       <Properties>
         <Property name="text" type="java.lang.String" value="Date de l&apos;enregistrement :"/>
-      </Properties>
-    </Component>
-    <Component class="com.toedter.calendar.JDateChooser" name="jDateChooserDateEnregistrement">
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabelTitre">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Ubuntu" size="24" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Ajouter un enregistrement"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabelLibelle">
@@ -731,6 +759,8 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonValiderModifierActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="jDateChooserDateEnregistrement">
     </Component>
   </SubComponents>
 </Form>

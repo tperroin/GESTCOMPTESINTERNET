@@ -2,6 +2,8 @@ package modele.dao;
 
 
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import metier.Libelle;
 import metier.ModeReglement;
 import metier.Motif;
 import modele.dao.DaoException;
+import org.h2.tools.Csv;
+import org.h2.tools.SimpleResultSet;
 
 /**
  *
@@ -93,7 +97,7 @@ public abstract class Dao {
            ajouterLibelle = cnx.prepareStatement("INSERT INTO LIBELLE VALUES (?, ?)");
            recupereDernierIdLibelle = cnx.prepareStatement("SELECT MAX(ID) FROM LIBELLE");
            mettreAJourEnregistrement = cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_COMPTE = ?, ID_MOTIF = ?, ID_ETAT = ?, RECETTEDEPENSE = ?, DATEENREGISTREMENT = ?, MONTANT = ?, ANCIENSOLDE =?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, NUMCHQ = ?, ANTICIPATION = ? WHERE ID = ? ");
-           mettreAJourEnregistrementFromOrdre= cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_MOTIF = ?, ID_ETAT = ?, DATEENREGISTREMENT = ?, MONTANT = ?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, ANTICIPATION = ? WHERE ORDRE = ? AND ID_COMPTE = ?");
+           mettreAJourEnregistrementFromOrdre= cnx.prepareStatement("UPDATE ENREGISTREMENT SET ID_LIBELLE = ?, ID_MODEREGLEMENT = ?, ID_MOTIF = ?, ID_ETAT = ?, DATEENREGISTREMENT = ?, MONTANT = ?, NOUVEAUSOLDE = ?, DATEFACTURE = ?, ANTICIPATION = ?, NUMCHQ = ? WHERE ORDRE = ? AND ID_COMPTE = ?");
            recupererAncienDernierSolde = cnx.prepareStatement("SELECT ANCIENSOLDE  FROM ENREGISTREMENT WHERE ID_COMPTE = ? AND ID IN (SELECT MAX (ID) FROM ENREGISTREMENT)");
            recupererDernierSoldeRemiseCheque = cnx.prepareStatement("SELECT NOUVEAUSOLDE FROM ENREGISTREMENT WHERE ID = ? AND ID_COMPTE = ?");
            lireTousLesEnregistrements = cnx.prepareStatement("SELECT * FROM ENREGISTREMENT "
@@ -300,7 +304,7 @@ public abstract class Dao {
         }
     }
     
-    public int ajouterUnEnregistrement(Integer id, Integer idLibelle, Integer idModeReglement, Integer idCompte, Integer idEtat, Integer idMotif, String RecDep, String DateEnr, Float montant, Float ancienSolde, Float nouveauSolde, String dateFacture, String numCHQ, Boolean anticipation, Integer ordre) throws DaoException {
+    public int ajouterUnEnregistrement(Integer id, Integer idLibelle, Integer idModeReglement, Integer idCompte, Integer idEtat, Integer idMotif, String RecDep, String DateEnr, BigDecimal montant, BigDecimal ancienSolde, BigDecimal nouveauSolde, String dateFacture, String numCHQ, Boolean anticipation, Integer ordre) throws DaoException {
         try {
             
             ajouterEnregistrement.setInt(1, id);
@@ -311,9 +315,9 @@ public abstract class Dao {
             ajouterEnregistrement.setInt(6, idMotif);
             ajouterEnregistrement.setString(7, RecDep);
             ajouterEnregistrement.setString(8, DateEnr);
-            ajouterEnregistrement.setFloat(9, montant);
-            ajouterEnregistrement.setFloat(10, ancienSolde);
-            ajouterEnregistrement.setFloat(11, nouveauSolde);
+            ajouterEnregistrement.setBigDecimal(9, montant);
+            ajouterEnregistrement.setBigDecimal(10, ancienSolde);
+            ajouterEnregistrement.setBigDecimal(11, nouveauSolde);
             ajouterEnregistrement.setString(12, dateFacture);
             ajouterEnregistrement.setString(13, numCHQ);
             ajouterEnregistrement.setBoolean(14, anticipation);
@@ -417,9 +421,9 @@ public abstract class Dao {
         }
     }
     
-    public int mettreAJourSoldeCompte(Integer idCompte, Float nouveauSolde) throws DaoException{
+    public int mettreAJourSoldeCompte(Integer idCompte, BigDecimal nouveauSolde) throws DaoException{
         try {    
-            mettreAJourSoldeCompte.setFloat(1, nouveauSolde);
+            mettreAJourSoldeCompte.setBigDecimal(1, nouveauSolde);
             mettreAJourSoldeCompte.setInt(2, idCompte);
             int nb = mettreAJourSoldeCompte.executeUpdate();
             
@@ -432,11 +436,11 @@ public abstract class Dao {
     
     
     
-    public int mettreAJourLesSoldes(Float nouveauSolde, Float ancienSolde, Integer idCompte, Integer ordre) throws DaoException {
+    public int mettreAJourLesSoldes(BigDecimal nouveauSolde, BigDecimal ancienSolde, Integer idCompte, Integer ordre) throws DaoException {
         try{
             
-            mettreAJourLesSoldes.setFloat(1, nouveauSolde);
-            mettreAJourLesSoldes.setFloat(2, ancienSolde);
+            mettreAJourLesSoldes.setBigDecimal(1, nouveauSolde);
+            mettreAJourLesSoldes.setBigDecimal(2, ancienSolde);
             mettreAJourLesSoldes.setInt(3, idCompte);
             mettreAJourLesSoldes.setInt(4, ordre);
             
@@ -447,10 +451,11 @@ public abstract class Dao {
         }
     }
     
-    public int supprimerEnregistrementFromOrdre(Integer ordre) throws DaoException{
+    public int supprimerEnregistrementFromOrdre(Integer ordre, Integer idCompte) throws DaoException{
         try{
             
             supprimerEnregistrementFromOrdre.setInt(1, ordre);
+            supprimerEnregistrementFromOrdre.setInt(2, idCompte);
             
             int nb= supprimerEnregistrementFromOrdre.executeUpdate();
             return nb;
@@ -526,8 +531,8 @@ public abstract class Dao {
                 int j = to;
                 int k = to;
                 
-                Float nouveauSolde;
-                Float ancienSolde;
+                BigDecimal nouveauSolde;
+                BigDecimal ancienSolde;
               
                 mettreAJourOrdre.setInt(1, to);
                 mettreAJourOrdre.setInt(2, from);
@@ -541,32 +546,32 @@ public abstract class Dao {
                     
                     Integer idEnr = lireIdEnrFromOrdreCompte(j-1, 1);
                     
-                    mettreAJourOrdreInfSup(j, j-1, idEnr, 2);
+                    mettreAJourOrdreInfSup(j, j-1, idEnr, 1);
                 
                 }
                 
                 if(k == 1){
                     
-                    nouveauSolde = lireMontantFromOrdre(k+nbSup, 1);
+                    nouveauSolde = new BigDecimal(lireMontantFromOrdre(k+nbSup, 1));
                     
                     if(verifierRecDep(k, 1) == false){
                         
-                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 1, k);
+                            mettreAJourLesSoldes(nouveauSolde, new BigDecimal(0), 1, k);
                             
                     }else{
                         
-                        mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 1, k);
+                        mettreAJourLesSoldes(nouveauSolde.negate(), new BigDecimal(0), 1, k);
                         
                     }
                 }else{
                     
                     if(verifierRecDep(k, 1) == false){
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)+lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)).add(new BigDecimal(lireMontantFromOrdre(k, 1))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)), 1, k);
                     
                     }else{
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)-lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)).subtract(new BigDecimal(lireMontantFromOrdre(k, 1))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)), 1, k);
                   
                     } 
       
@@ -579,12 +584,12 @@ public abstract class Dao {
                            
                            if(verifierRecDep(ordre, 1) == false){
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)+lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)).add(new BigDecimal(lireMontantFromOrdre(l+(i+1), 1))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)), 1, ordre);
                                 
                            }else{
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)-lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
-                                
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)).subtract(new BigDecimal(lireMontantFromOrdre(l+(i+1), 1))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)), 1, ordre);
+                               
                            }
                            
                        }catch(Exception e){
@@ -596,7 +601,7 @@ public abstract class Dao {
                    }
                 }
                 
-                mettreAJourSoldeCompte(1, recupererDernierSolde(1));
+                mettreAJourSoldeCompte(1, new BigDecimal(recupererDernierSolde(1)));
                 
             }else{
                 
@@ -605,8 +610,8 @@ public abstract class Dao {
                     int j = from;
                     int k = from;
 
-                    Float nouveauSolde;
-                    Float ancienSolde = null;
+                    BigDecimal nouveauSolde;
+                    BigDecimal ancienSolde = null;
 
                     mettreAJourOrdre.setInt(1, to);
                     mettreAJourOrdre.setInt(2, from);
@@ -624,11 +629,11 @@ public abstract class Dao {
                             
                            if(j<=to){
 
-                                mettreAJourOrdreInfSup(j-1, j, idEnr, 2);
+                                mettreAJourOrdreInfSup(j-1, j, idEnr, 1);
 
                             }else{
 
-                                mettreAJourOrdreInfSup(j, j, idEnr, 2);
+                                mettreAJourOrdreInfSup(j, j, idEnr, 1);
 
                             } 
                            
@@ -639,29 +644,29 @@ public abstract class Dao {
                     
                     if(k == 1){
 
-                        nouveauSolde = lireMontantFromOrdre(k+nbInf, 1);
+                        nouveauSolde = new BigDecimal(lireMontantFromOrdre(k+nbInf, 1));
                         
                         if(verifierRecDep(k, 1) == false){
                             
-                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 1, k);
+                            mettreAJourLesSoldes(nouveauSolde, new BigDecimal(0), 1, k);
                                 
                         }else{
                             
-                            mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 1, k);
+                            mettreAJourLesSoldes(nouveauSolde.negate(), new BigDecimal(0), 1, k);
                             
                         }
                         
                     }else{
                         
                         if(verifierRecDep(k, 1) == false){
-                            
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)+lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k);
-                            
-                        }else{
-                            
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 1)-lireMontantFromOrdre(k, 1), lireNouveauSoldeFromOrdre(k-1, 1), 1, k); 
-                            
-                        } 
+                        
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)).add(new BigDecimal(lireMontantFromOrdre(k, 1))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)), 1, k);
+                    
+                    }else{
+                        
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)).subtract(new BigDecimal(lireMontantFromOrdre(k, 1))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 1)), 1, k);
+                  
+                    }  
 
                         for(int i=0; i<=compterNbEnregistrement() ; i++){
 
@@ -671,14 +676,14 @@ public abstract class Dao {
                            try{
 
                                if(verifierRecDep(ordre, 1) == false){
-                                   
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)+lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
-                                    
-                               }else{
-                                   
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 1)-lireMontantFromOrdre(l+(i+1), 1), lireNouveauSoldeFromOrdre(l+i, 1), 1, ordre);
-                                    
-                               }
+                               
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)).add(new BigDecimal(lireMontantFromOrdre(l+(i+1), 1))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)), 1, ordre);
+                                
+                           }else{
+                               
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)).subtract(new BigDecimal(lireMontantFromOrdre(l+(i+1), 1))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 1)), 1, ordre);
+                               
+                           }
 
                            }catch(Exception e){
 
@@ -694,7 +699,7 @@ public abstract class Dao {
                     }
                 }
                 
-                mettreAJourSoldeCompte(1, recupererDernierSolde(1));
+                mettreAJourSoldeCompte(1, new BigDecimal(recupererDernierSolde(1)));
 
             }
         } catch (SQLException ex) {
@@ -716,8 +721,8 @@ public abstract class Dao {
                 int j = to;
                 int k = to;
                 
-                Float nouveauSolde;
-                Float ancienSolde;
+                BigDecimal nouveauSolde;
+                BigDecimal ancienSolde;
               
                 mettreAJourOrdre.setInt(1, to);
                 mettreAJourOrdre.setInt(2, from);
@@ -737,28 +742,28 @@ public abstract class Dao {
                 
                 if(k == 1){
                     
-                    nouveauSolde = lireMontantFromOrdre(k+nbSup, 2);
+                    nouveauSolde = new BigDecimal(lireMontantFromOrdre(k+nbSup, 2));
                     
                     if(verifierRecDep(k, 2) == false){
                         
-                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 2, k);
+                            mettreAJourLesSoldes(nouveauSolde, new BigDecimal(0), 2, k);
                             
                     }else{
                         
-                        mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 2, k);
+                        mettreAJourLesSoldes(nouveauSolde.negate(), new BigDecimal(0), 2, k);
                         
                     }
                 }else{
                     
                     if(verifierRecDep(k, 2) == false){
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)+lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)).add(new BigDecimal(lireMontantFromOrdre(k, 2))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)), 2, k);
                     
                     }else{
                         
-                        mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)-lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)).subtract(new BigDecimal(lireMontantFromOrdre(k, 2))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)), 2, k);
                   
-                    } 
+                    }  
       
                     for(int i=0; i<k ; i++){
 
@@ -769,12 +774,12 @@ public abstract class Dao {
                            
                            if(verifierRecDep(ordre, 2) == false){
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)+lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)).add(new BigDecimal(lireMontantFromOrdre(l+(i+1), 2))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)), 2, ordre);
                                 
                            }else{
                                
-                                mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)-lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
-                                
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)).subtract(new BigDecimal(lireMontantFromOrdre(l+(i+1), 2))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)), 2, ordre);
+                               
                            }
                            
                        }catch(Exception e){
@@ -786,7 +791,7 @@ public abstract class Dao {
                    }
                 }
                 
-                mettreAJourSoldeCompte(2, recupererDernierSolde(2));
+                mettreAJourSoldeCompte(2, new BigDecimal(recupererDernierSolde(2)));
                 
             }else{
                 
@@ -795,8 +800,8 @@ public abstract class Dao {
                     int j = from;
                     int k = from;
 
-                    Float nouveauSolde;
-                    Float ancienSolde = null;
+                    BigDecimal nouveauSolde;
+                    BigDecimal ancienSolde = null;
 
                     mettreAJourOrdre.setInt(1, to);
                     mettreAJourOrdre.setInt(2, from);
@@ -829,29 +834,29 @@ public abstract class Dao {
                     
                     if(k == 1){
 
-                        nouveauSolde = lireMontantFromOrdre(k+nbInf, 2);
+                        nouveauSolde = new BigDecimal(lireMontantFromOrdre(k+nbInf, 2));
                         
                         if(verifierRecDep(k, 2) == false){
+                        
+                            mettreAJourLesSoldes(nouveauSolde, new BigDecimal(0), 2, k);
                             
-                            mettreAJourLesSoldes(nouveauSolde, Float.parseFloat("0"), 2, k);
-                                
-                        }else{
-                            
-                            mettreAJourLesSoldes(-nouveauSolde, Float.parseFloat("0"), 2, k);
-                            
-                        }
+                    }else{
+                        
+                        mettreAJourLesSoldes(nouveauSolde.negate(), new BigDecimal(0), 2, k);
+                        
+                    }
                         
                     }else{
                         
                         if(verifierRecDep(k, 2) == false){
-                            
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)+lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k);
-                            
-                        }else{
-                            
-                            mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(k-1, 2)-lireMontantFromOrdre(k, 2), lireNouveauSoldeFromOrdre(k-1, 2), 2, k); 
-                            
-                        } 
+                        
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)).add(new BigDecimal(lireMontantFromOrdre(k, 2))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)), 2, k);
+                    
+                    }else{
+                        
+                        mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)).subtract(new BigDecimal(lireMontantFromOrdre(k, 2))), new BigDecimal(lireNouveauSoldeFromOrdre(k-1, 2)), 2, k);
+                  
+                    }  
 
                         for(int i=0; i<=compterNbEnregistrement() ; i++){
 
@@ -861,14 +866,14 @@ public abstract class Dao {
                            try{
 
                                if(verifierRecDep(ordre, 2) == false){
-                                   
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)+lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
-                                    
-                               }else{
-                                   
-                                    mettreAJourLesSoldes(lireNouveauSoldeFromOrdre(l+i, 2)-lireMontantFromOrdre(l+(i+1), 2), lireNouveauSoldeFromOrdre(l+i, 2), 2, ordre);
-                                    
-                               }
+                               
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)).add(new BigDecimal(lireMontantFromOrdre(l+(i+1), 2))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)), 2, ordre);
+                                
+                           }else{
+                               
+                                mettreAJourLesSoldes(new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)).subtract(new BigDecimal(lireMontantFromOrdre(l+(i+1), 2))), new BigDecimal(lireNouveauSoldeFromOrdre(l+i, 2)), 2, ordre);
+                               
+                           }
 
                            }catch(Exception e){
 
@@ -884,7 +889,7 @@ public abstract class Dao {
                     }
                 }
                 
-                mettreAJourSoldeCompte(2, recupererDernierSolde(2));
+                mettreAJourSoldeCompte(2, new BigDecimal(recupererDernierSolde(2)));
 
             }
         } catch (SQLException ex) {
@@ -951,7 +956,7 @@ public abstract class Dao {
         }
     }
     
-    public int modifierUnEnregistrement(Integer id, Integer idLibelle, Integer idModeReglement, Integer idCompte, Integer idEtat, Integer idMotif, String RecDep, String DateEnr, Float montant, Float ancienSolde, Float nouveauSolde, String dateFacture, String numCHQ, Boolean anticipation) throws DaoException {
+    public int modifierUnEnregistrement(Integer id, Integer idLibelle, Integer idModeReglement, Integer idCompte, Integer idEtat, Integer idMotif, String RecDep, String DateEnr, BigDecimal montant, BigDecimal ancienSolde, BigDecimal nouveauSolde, String dateFacture, String numCHQ, Boolean anticipation) throws DaoException {
         try {
             
             mettreAJourEnregistrement.setInt(14, id);
@@ -962,9 +967,9 @@ public abstract class Dao {
             mettreAJourEnregistrement.setInt(5, idEtat);
             mettreAJourEnregistrement.setString(6, RecDep);
             mettreAJourEnregistrement.setString(7, DateEnr);
-            mettreAJourEnregistrement.setFloat(8, montant);
-            mettreAJourEnregistrement.setFloat(9, ancienSolde);
-            mettreAJourEnregistrement.setFloat(10, nouveauSolde);
+            mettreAJourEnregistrement.setBigDecimal(8, montant);
+            mettreAJourEnregistrement.setBigDecimal(9, ancienSolde);
+            mettreAJourEnregistrement.setBigDecimal(10, nouveauSolde);
             mettreAJourEnregistrement.setString(11, dateFacture);
             mettreAJourEnregistrement.setString(12, numCHQ);
             mettreAJourEnregistrement.setBoolean(13, anticipation);
@@ -976,20 +981,21 @@ public abstract class Dao {
         }        
     }
     
-    public int modifierUnEnregistrementFromOrdre(Integer ordre, Integer idLibelle, Integer idModeReglement, Integer idEtat, Integer idMotif, String DateEnr, Float montant, Float nouveauSolde, String dateFacture, Boolean anticipation, Integer idCompte) throws DaoException {
+    public int modifierUnEnregistrementFromOrdre(Integer ordre, Integer idLibelle, Integer idModeReglement, Integer idEtat, Integer idMotif, String DateEnr, BigDecimal montant, BigDecimal nouveauSolde, String dateFacture, Boolean anticipation, String numchq, Integer idCompte) throws DaoException {
         try {
             
-            mettreAJourEnregistrementFromOrdre.setInt(11, idCompte);
-            mettreAJourEnregistrementFromOrdre.setInt(10, ordre);
+            mettreAJourEnregistrementFromOrdre.setInt(12, idCompte);
+            mettreAJourEnregistrementFromOrdre.setInt(11, ordre);
             mettreAJourEnregistrementFromOrdre.setInt(1, idLibelle);
             mettreAJourEnregistrementFromOrdre.setInt(2, idModeReglement);
             mettreAJourEnregistrementFromOrdre.setInt(3, idMotif);
             mettreAJourEnregistrementFromOrdre.setInt(4, idEtat);
             mettreAJourEnregistrementFromOrdre.setString(5, DateEnr);
-            mettreAJourEnregistrementFromOrdre.setFloat(6, montant);
-            mettreAJourEnregistrementFromOrdre.setFloat(7, nouveauSolde);
+            mettreAJourEnregistrementFromOrdre.setBigDecimal(6, montant);
+            mettreAJourEnregistrementFromOrdre.setBigDecimal(7, nouveauSolde);
             mettreAJourEnregistrementFromOrdre.setString(8, dateFacture);
             mettreAJourEnregistrementFromOrdre.setBoolean(9, anticipation);
+            mettreAJourEnregistrementFromOrdre.setString(10, numchq);
             
             int nb= mettreAJourEnregistrementFromOrdre.executeUpdate();
             return nb;
@@ -998,13 +1004,13 @@ public abstract class Dao {
         }        
     }
     
-    public Float recupererAncienDernierSolde(Integer idCompte) throws DaoException{
+    public BigDecimal recupererAncienDernierSolde(Integer idCompte) throws DaoException{
         try {     
             recupererAncienDernierSolde.setInt(1, idCompte);
             ResultSet rs = recupererAncienDernierSolde.executeQuery();
-            Float solde = null;
+            BigDecimal solde = null;
             if (rs.next()) {
-                solde = rs.getFloat(1);
+                solde = rs.getBigDecimal(1);
             }
             
             return solde;
@@ -1013,14 +1019,14 @@ public abstract class Dao {
         }
     }
     
-    public Float recupererDernierSoldeRemiseCheques(Integer id, Integer idCompte) throws DaoException{
+    public BigDecimal recupererDernierSoldeRemiseCheques(Integer id, Integer idCompte) throws DaoException{
         try {        
             recupererDernierSoldeRemiseCheque.setInt(1, id);
             recupererDernierSoldeRemiseCheque.setInt(2, idCompte);
             ResultSet rs = recupererDernierSoldeRemiseCheque.executeQuery();
-            Float solde = null;
+            BigDecimal solde = null;
             if (rs.next()) {
-                solde = rs.getFloat(1);
+                solde = rs.getBigDecimal(1);
             }
             
             return solde;
@@ -1096,6 +1102,7 @@ public abstract class Dao {
             enregistrement.setDateFacture(rs.getString("DATEFACTURE"));
             enregistrement.setNumCHQ(rs.getString("NUMCHQ"));
             enregistrement.setAnticipation(rs.getString("ANTICIPATION"));
+            enregistrement.setOrdre(rs.getString("ORDRE"));
             
             return enregistrement;
         } catch (SQLException ex) {
@@ -1204,5 +1211,15 @@ public abstract class Dao {
         } catch (SQLException ex) {
             throw new DaoException("DAO - mettreAJourOrdreInfSup : pb JDBC\n" + ex.getMessage());
         }        
+    }
+    
+    public void export(String[] args) throws Exception {
+        
+        SimpleResultSet rs = new SimpleResultSet();
+        rs.addColumn("NAME", Types.VARCHAR, 255, 0);
+        rs.addColumn("EMAIL", Types.VARCHAR, 255, 0);
+        rs.addRow("Bob Meier", "bob.meier@abcde.abc");
+        rs.addRow("John Jones", "john.jones@abcde.abc");
+        new Csv().write("data/test.csv", rs, null);
     }
 }

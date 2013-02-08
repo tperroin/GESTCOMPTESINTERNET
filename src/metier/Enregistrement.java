@@ -207,7 +207,7 @@ public  class Enregistrement  {
 
     @Override
     public String toString() {
-        return "Enregistrement{" + "id=" + id + ", prelevementEncaissement=" + prelevementEncaissement + ", recetteDepense=" + recetteDepense + ", date=" + date + ", montant=" + montant + ", ancienSolde=" + ancienSolde + ", nouveauSolde=" + nouveauSolde + ", numCHQ=" + numCHQ + ", dateFacture=" + dateFacture + ", anticipation=" + anticipation + ", ordre=" + ordre + ", IdCompte=" + IdCompte + ", IdEtat=" + IdEtat + ", modeReglement=" + modeReglement + ", motif=" + motif + ", IdLibelle=" + IdLibelle + '}';
+        return "Enregistrement{" + "id=" + id + ", prelevementEncaissement=" + prelevementEncaissement + ", recetteDepense=" + recetteDepense + ", date=" + date + ", montant=" + montant + ", ancienSolde=" + ancienSolde + ", nouveauSolde=" + nouveauSolde + ", numCHQ=" + numCHQ + ", dateFacture=" + dateFacture + ", anticipation=" + anticipation + ", ordre=" + ordre + ", IdCompte=" + IdCompte + ", IdEtat=" + IdEtat + ", modeReglement=" + modeReglement + ", motif=" + motif + ", IdLibelle=" + IdLibelle + ", ordre=" + ordre + '}';
     }
 
         

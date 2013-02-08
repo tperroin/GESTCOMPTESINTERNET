@@ -6,37 +6,48 @@ package vues;
 
 import com.alee.extended.breadcrumb.WebBreadcrumb;
 import com.alee.extended.breadcrumb.WebBreadcrumbLabel;
+import com.alee.extended.filechooser.WebFileChooserField;
 import com.alee.extended.panel.GroupPanel;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.toolbar.ToolbarStyle;
 import com.alee.laf.toolbar.WebToolBar;
+import com.toedter.calendar.JYearChooser;
 import controleurs.Controleur;
-import controleurs.CtrlAccueil;
 import controleurs.CtrlArchivageCIO;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
 import modele.dao.DaoException;
+import org.h2.tools.Csv;
+import org.h2.tools.SimpleResultSet;
 /**
  *
  * @author Thibault
  */
-public class VueAccueil extends VueAbstraite {
+public class VueArchivageCIO extends VueAbstraite {
 
     /**
      * Creates new form VueAccueil
      */
-    public VueAccueil(Controleur ctrl) {
+    public VueArchivageCIO(Controleur ctrl) {
         super(ctrl);
         initComponents();
         
         this.pack();
         this.setLocationRelativeTo(null);
-      
     }
     
+    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -47,8 +58,9 @@ public class VueAccueil extends VueAbstraite {
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
-        jLabelTitre = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        webButton1 = new com.alee.laf.button.WebButton();
+        jYearChooser1 = new com.toedter.calendar.JYearChooser();
+        webLabel1 = new com.alee.laf.label.WebLabel();
         jMenuBarMenu = new javax.swing.JMenuBar();
         jMenuFichier = new javax.swing.JMenu();
         jMenuItemAjouter = new javax.swing.JMenuItem();
@@ -63,12 +75,16 @@ public class VueAccueil extends VueAbstraite {
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Archivage compte CIC Ouest");
 
-        jLabelTitre.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabelTitre.setText("GestComptes Internet");
+        webButton1.setText("OK");
+        webButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                webButton1ActionPerformed(evt);
+            }
+        });
 
-        jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 10)); // NOI18N
-        jLabel1.setText("Copyright 2013 - Perroin Thibault");
+        webLabel1.setText("Année à archiver :");
 
         jMenuFichier.setText("Fichier");
 
@@ -82,7 +98,7 @@ public class VueAccueil extends VueAbstraite {
         });
         jMenuFichier.add(jMenuItemAjouter);
 
-        jMenuItemQuitter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
+        jMenuItemQuitter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemQuitter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/switch.png"))); // NOI18N
         jMenuItemQuitter.setText("Quitter");
         jMenuItemQuitter.addActionListener(new java.awt.event.ActionListener() {
@@ -146,21 +162,26 @@ public class VueAccueil extends VueAbstraite {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1))
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(255, Short.MAX_VALUE)
-                .addComponent(jLabelTitre)
-                .addGap(0, 255, Short.MAX_VALUE))
+                .addGap(53, 53, 53)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(148, Short.MAX_VALUE)
-                .addComponent(jLabelTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 147, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(90, 90, 90)
+                .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
         pack();
@@ -172,48 +193,161 @@ public class VueAccueil extends VueAbstraite {
 
     private void jMenuItemAjouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAjouterActionPerformed
         try {
-            ((CtrlAccueil)controleur).afficherAjouterEnregistrement();
+            ((CtrlArchivageCIO)controleur).afficherAjouterEnregistrement();
         } catch (DaoException ex) {
-            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemAjouterActionPerformed
 
     private void jMenuItemCIOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCIOActionPerformed
         try {
-            ((CtrlAccueil)controleur).afficherAfficherCompteCIO();
+            ((CtrlArchivageCIO)controleur).afficherAfficherCompteCIO();
         } catch (DaoException ex) {
-            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCIOActionPerformed
 
     private void jMenuItemCMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCMActionPerformed
         try {
-            ((CtrlAccueil)controleur).afficherAfficherCompteCM();
+            ((CtrlArchivageCIO)controleur).afficherAfficherCompteCM();
         } catch (DaoException ex) {
-            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCMActionPerformed
 
+    private void webButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButton1ActionPerformed
+        try {
+            ((CtrlArchivageCIO)controleur).sauvegarder(getjYearChooser1().getYear());
+        } catch (DaoException ex) {
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+
+    public JMenu getjMenuAfficher() {
+        return jMenuAfficher;
+    }
+
+    public void setjMenuAfficher(JMenu jMenuAfficher) {
+        this.jMenuAfficher = jMenuAfficher;
+    }
+
+    public JMenu getjMenuArchiver() {
+        return jMenuArchiver;
+    }
+
+    public void setjMenuArchiver(JMenu jMenuArchiver) {
+        this.jMenuArchiver = jMenuArchiver;
+    }
+
+    public JMenuBar getjMenuBarMenu() {
+        return jMenuBarMenu;
+    }
+
+    public void setjMenuBarMenu(JMenuBar jMenuBarMenu) {
+        this.jMenuBarMenu = jMenuBarMenu;
+    }
+
+    public JMenu getjMenuFichier() {
+        return jMenuFichier;
+    }
+
+    public void setjMenuFichier(JMenu jMenuFichier) {
+        this.jMenuFichier = jMenuFichier;
+    }
+
+    public JMenuItem getjMenuItem1() {
+        return jMenuItem1;
+    }
+
+    public void setjMenuItem1(JMenuItem jMenuItem1) {
+        this.jMenuItem1 = jMenuItem1;
+    }
+
+    public JMenuItem getjMenuItemAjouter() {
+        return jMenuItemAjouter;
+    }
+
+    public void setjMenuItemAjouter(JMenuItem jMenuItemAjouter) {
+        this.jMenuItemAjouter = jMenuItemAjouter;
+    }
+
+    public JMenuItem getjMenuItemCIO() {
+        return jMenuItemCIO;
+    }
+
+    public void setjMenuItemCIO(JMenuItem jMenuItemCIO) {
+        this.jMenuItemCIO = jMenuItemCIO;
+    }
+
+    public JMenuItem getjMenuItemCIOArch() {
+        return jMenuItemCIOArch;
+    }
+
+    public void setjMenuItemCIOArch(JMenuItem jMenuItemCIOArch) {
+        this.jMenuItemCIOArch = jMenuItemCIOArch;
+    }
+
+    public JMenuItem getjMenuItemCM() {
+        return jMenuItemCM;
+    }
+
+    public void setjMenuItemCM(JMenuItem jMenuItemCM) {
+        this.jMenuItemCM = jMenuItemCM;
+    }
+
+    public JMenuItem getjMenuItemCMArch() {
+        return jMenuItemCMArch;
+    }
+
+    public void setjMenuItemCMArch(JMenuItem jMenuItemCMArch) {
+        this.jMenuItemCMArch = jMenuItemCMArch;
+    }
+
+    public JMenuItem getjMenuItemQuitter() {
+        return jMenuItemQuitter;
+    }
+
+    public void setjMenuItemQuitter(JMenuItem jMenuItemQuitter) {
+        this.jMenuItemQuitter = jMenuItemQuitter;
+    }
+
+    public JYearChooser getjYearChooser1() {
+        return jYearChooser1;
+    }
+
+    public void setjYearChooser1(JYearChooser jYearChooser1) {
+        this.jYearChooser1 = jYearChooser1;
+    }
+
+    public WebButton getWebButton1() {
+        return webButton1;
+    }
+
+    public void setWebButton1(WebButton webButton1) {
+        this.webButton1 = webButton1;
+    }//GEN-LAST:event_webButton1ActionPerformed
+
     private void jMenuItemCIOArchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCIOArchActionPerformed
         try {
-            ((CtrlAccueil)controleur).afficherArchivageCIO();
+            ((CtrlArchivageCIO)controleur).afficherArchivageCIO();
         } catch (DaoException ex) {
-            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCIOArchActionPerformed
 
     private void jMenuItemCMArchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCMArchActionPerformed
         try {
-            ((CtrlAccueil)controleur).afficherArchivageCM();
+            ((CtrlArchivageCIO)controleur).afficherArchivageCM();
         } catch (DaoException ex) {
-            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItemCMArchActionPerformed
 
    
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabelTitre;
     private javax.swing.JMenu jMenuAfficher;
     private javax.swing.JMenu jMenuArchiver;
     private javax.swing.JMenuBar jMenuBarMenu;
@@ -225,6 +359,9 @@ public class VueAccueil extends VueAbstraite {
     private javax.swing.JMenuItem jMenuItemCM;
     private javax.swing.JMenuItem jMenuItemCMArch;
     private javax.swing.JMenuItem jMenuItemQuitter;
+    private com.toedter.calendar.JYearChooser jYearChooser1;
+    private com.alee.laf.button.WebButton webButton1;
+    private com.alee.laf.label.WebLabel webLabel1;
     // End of variables declaration//GEN-END:variables
 
     

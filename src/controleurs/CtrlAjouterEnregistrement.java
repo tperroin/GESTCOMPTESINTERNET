@@ -5,6 +5,7 @@ package controleurs;
 
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,6 +38,8 @@ public class CtrlAjouterEnregistrement extends Controleur {
     CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
     CtrlAfficherCompteCM ctrlAfficherCompteCM;
     CtrlAccueil ctrlAccueil;
+    CtrlArchivageCIO ctrlArchivageCIO;
+    CtrlArchivageCM ctrlArchivageCM;
     
     public CtrlAjouterEnregistrement(Controleur ctrl) throws DaoException {
         super(ctrl);
@@ -95,6 +98,24 @@ public class CtrlAjouterEnregistrement extends Controleur {
             ctrlAccueil = new CtrlAccueil(this);
         }else{
             ctrlAccueil.afficherVue();
+        }
+        this.cacherVue();
+    }
+    
+    public void afficherArchivageCIO() throws DaoException{
+        if (ctrlArchivageCIO == null){
+            ctrlArchivageCIO = new CtrlArchivageCIO(this);
+        }else{
+            ctrlArchivageCIO.afficherVue();
+        }
+        this.cacherVue();
+    }
+    
+    public void afficherArchivageCM() throws DaoException{
+        if (ctrlArchivageCM == null){
+            ctrlArchivageCM = new CtrlArchivageCM(this);
+        }else{
+            ctrlArchivageCM.afficherVue();
         }
         this.cacherVue();
     }
@@ -312,22 +333,23 @@ public class CtrlAjouterEnregistrement extends Controleur {
             }
             
             
-            Float montant = null;
-            Float ancienSolde = null;
-            Float nouveauSolde = null;
+            BigDecimal montant = null;
+            BigDecimal ancienSolde = null;
+            BigDecimal nouveauSolde = null;
             String dateFacture = "";
+            
             try{
-                montant = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant().getText());
+                montant = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant().getText());
                 
-                ancienSolde = soldeCompte(idCompte);
+                ancienSolde = new BigDecimal(soldeCompte(idCompte));
             
                 nouveauSolde = null;
 
                 if("Dépense".equals(RecDep)){
-                    nouveauSolde = ancienSolde - montant;
+                    nouveauSolde = ancienSolde.subtract(montant);
                 }else{
                     if("Recette".equals(RecDep)){
-                        nouveauSolde = ancienSolde + montant;
+                        nouveauSolde = ancienSolde.add(montant);
                     }
                 }
 
@@ -377,21 +399,21 @@ public class CtrlAjouterEnregistrement extends Controleur {
                 
                 if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                     
-                    Float montant1 = null;
-                    Float ancienSolde1 = null;
-                    Float nouveauSolde1 = null;
+                    BigDecimal montant1 = null;
+                    BigDecimal ancienSolde1 = null;
+                    BigDecimal nouveauSolde1 = null;
                     
                     try{
 
-                        montant1 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant1().getText());
+                        montant1 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant1().getText());
                         nouveauSolde1 = null;
-                        ancienSolde1 = soldeCompte(idCompte);
+                        ancienSolde1 = new BigDecimal(soldeCompte(idCompte));
 
                         if("Dépense".equals(RecDep)){
-                            nouveauSolde1 = ancienSolde1 - montant1;
+                            nouveauSolde1 = ancienSolde1.subtract(montant1);
                         }else{
                             if("Recette".equals(RecDep)){
-                                nouveauSolde1 = ancienSolde1 + montant1;
+                                nouveauSolde1 = ancienSolde1.add(montant1);
                             }
                         }
                     }catch(Exception e){
@@ -430,21 +452,21 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float montant2 = null;
-                            Float ancienSolde2 = null;
-                            Float nouveauSolde2 = null;
+                            BigDecimal montant2 = null;
+                            BigDecimal ancienSolde2 = null;
+                            BigDecimal nouveauSolde2 = null;
                             
                             try{
-                                montant2 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant2().getText());
+                                montant2 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant2().getText());
 
-                                ancienSolde2 = soldeCompte(idCompte);
+                                ancienSolde2 = new BigDecimal(soldeCompte(idCompte));
                                 nouveauSolde2 = null;
 
                                 if("Dépense".equals(RecDep)){
-                                    nouveauSolde2 = ancienSolde2 - montant2;
+                                    nouveauSolde2 = ancienSolde2.subtract(montant2);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde2 = ancienSolde2 + montant2;
+                                        nouveauSolde2 = ancienSolde2.add(montant2);
                                     }
                                 }
                             }catch(Exception e){
@@ -486,21 +508,21 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float ancienSolde3 = null;
-                            Float montant3 = null;
-                            Float nouveauSolde3 = null;
+                            BigDecimal ancienSolde3 = null;
+                            BigDecimal montant3 = null;
+                            BigDecimal nouveauSolde3 = null;
                             
                             try{
                             
-                                ancienSolde3 = soldeCompte(idCompte);
-                                montant3 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant3().getText());
+                                ancienSolde3 = new BigDecimal(soldeCompte(idCompte));
+                                montant3 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant3().getText());
                                 nouveauSolde3 = null;
 
                                 if("Dépense".equals(RecDep)){
-                                nouveauSolde3 = ancienSolde3 - montant3;
+                                nouveauSolde3 = ancienSolde3.subtract(montant3);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde3 = ancienSolde3 + montant3;
+                                        nouveauSolde3 = ancienSolde3.add(montant3);
                                     }
                                 }
                             
@@ -542,21 +564,21 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float ancienSolde4 = null;
-                            Float montant4 = null;
-                            Float nouveauSolde4 = null;
+                            BigDecimal ancienSolde4 = null;
+                            BigDecimal montant4 = null;
+                            BigDecimal nouveauSolde4 = null;
                             
                             try{
                             
-                                ancienSolde4 = soldeCompte(idCompte);
-                                montant4 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant4().getText());
+                                ancienSolde4 = new BigDecimal(soldeCompte(idCompte));
+                                montant4 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant4().getText());
                                 nouveauSolde4 = null;
 
                                 if("Dépense".equals(RecDep)){
-                                nouveauSolde4 = ancienSolde4 - montant4;
+                                nouveauSolde4 = ancienSolde4.subtract(montant4);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde4 = ancienSolde4 + montant4;
+                                        nouveauSolde4 = ancienSolde4.add(montant4);
                                     }
                                 }
                             }catch(Exception e){
@@ -994,13 +1016,13 @@ public class CtrlAjouterEnregistrement extends Controleur {
             }
              
             
-            Float montant = null;
-            Float ancienSolde = null;
-            Float nouveauSolde = null;
+            BigDecimal montant = null;
+            BigDecimal ancienSolde = null;
+            BigDecimal nouveauSolde = null;
             String dateFacture = "";
             Integer idEnregistrement = dao.recupererDernierIdEnr();
             try{
-                montant = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant().getText());
+                montant = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant().getText());
                 
                 ancienSolde = dao.recupererAncienDernierSolde(idCompte);
                 
@@ -1008,10 +1030,10 @@ public class CtrlAjouterEnregistrement extends Controleur {
                 nouveauSolde = null;
 
                 if("Dépense".equals(RecDep)){
-                    nouveauSolde = ancienSolde - montant;
+                    nouveauSolde = ancienSolde.subtract(montant);
                 }else{
                     if("Recette".equals(RecDep)){
-                        nouveauSolde = ancienSolde + montant;
+                        nouveauSolde = ancienSolde.add(montant);
                     }
                 }
 
@@ -1073,9 +1095,9 @@ public class CtrlAjouterEnregistrement extends Controleur {
                 
                 if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                     
-                    Float montant1 = null;
-                    Float ancienSolde1 = null;
-                    Float nouveauSolde1 = null;
+                    BigDecimal montant1 = null;
+                    BigDecimal ancienSolde1 = null;
+                    BigDecimal nouveauSolde1 = null;
                    
                     Integer id5;
                     
@@ -1096,16 +1118,16 @@ public class CtrlAjouterEnregistrement extends Controleur {
                     try{
                         
                         
-                        montant1 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant1().getText());
+                        montant1 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant1().getText());
                         nouveauSolde1 = null;
                         ancienSolde1 = dao.recupererDernierSoldeRemiseCheques(id5 - 1, idCompteRemiseCheques);
 
                         
                         if("Dépense".equals(RecDep)){
-                            nouveauSolde1 = ancienSolde1 - montant1;
+                            nouveauSolde1 = ancienSolde1.subtract(montant1);
                         }else{
                             if("Recette".equals(RecDep)){
-                                nouveauSolde1 = ancienSolde1 + montant1;
+                                nouveauSolde1 = ancienSolde1.add(montant1);
                             }
                         }
                     }catch(Exception e){
@@ -1141,9 +1163,9 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float montant2 = null;
-                            Float ancienSolde2 = null;
-                            Float nouveauSolde2 = null;
+                            BigDecimal montant2 = null;
+                            BigDecimal ancienSolde2 = null;
+                            BigDecimal nouveauSolde2 = null;
                                
                             Integer id2;
                     
@@ -1161,16 +1183,16 @@ public class CtrlAjouterEnregistrement extends Controleur {
                             
                             
                             try{
-                                montant2 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant2().getText());
+                                montant2 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant2().getText());
 
                                 ancienSolde2 = dao.recupererDernierSoldeRemiseCheques(id2 - 1, idCompteRemiseCheques);
                                  nouveauSolde2 = null;
 
                                 if("Dépense".equals(RecDep)){
-                                    nouveauSolde2 = ancienSolde2 - montant2;
+                                    nouveauSolde2 = ancienSolde2.subtract(montant2);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde2 = ancienSolde2 + montant2;
+                                        nouveauSolde2 = ancienSolde2.add(montant2);
                                     }
                                 }
                             }catch(Exception e){
@@ -1210,9 +1232,9 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float ancienSolde3 = null;
-                            Float montant3 = null;
-                            Float nouveauSolde3 = null;
+                            BigDecimal ancienSolde3 = null;
+                            BigDecimal montant3 = null;
+                            BigDecimal nouveauSolde3 = null;
                             
                             Integer id3;
                     
@@ -1226,16 +1248,16 @@ public class CtrlAjouterEnregistrement extends Controleur {
                             
                             try{
                             
-                                montant3 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant3().getText());
+                                montant3 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant3().getText());
                                 nouveauSolde3 = null;
                                 
                                 ancienSolde3 = dao.recupererDernierSoldeRemiseCheques(id3 - 1, idCompteRemiseCheques);
                                 
                                 if("Dépense".equals(RecDep)){
-                                nouveauSolde3 = ancienSolde3 - montant3;
+                                nouveauSolde3 = ancienSolde3.subtract(montant3);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde3 = ancienSolde3 + montant3;
+                                        nouveauSolde3 = ancienSolde3.add(montant3);
                                     }
                                 }
                             
@@ -1276,21 +1298,21 @@ public class CtrlAjouterEnregistrement extends Controleur {
                         
                         if(verifierValeursMontant() != false && verifierSaisieRemiseCheque() != false){
                             
-                            Float ancienSolde4 = null;
-                            Float montant4 = null;
-                            Float nouveauSolde4 = null;
+                            BigDecimal ancienSolde4 = null;
+                            BigDecimal montant4 = null;
+                            BigDecimal nouveauSolde4 = null;
                             Integer id4 = dao.recupererDernierIdEnr();
                             try{
                             
                                 ancienSolde4 = dao.recupererDernierSoldeRemiseCheques(id4 - 1, idCompteRemiseCheques);
-                                montant4 = Float.parseFloat(((VueAjouterEnregistrement)vue).getjTextFieldMontant4().getText());
+                                montant4 = new BigDecimal(((VueAjouterEnregistrement)vue).getjTextFieldMontant4().getText());
                                 nouveauSolde4 = null;
 
                                 if("Dépense".equals(RecDep)){
-                                nouveauSolde4 = ancienSolde4 - montant4;
+                                nouveauSolde4 = ancienSolde4.subtract(montant4);
                                 }else{
                                     if("Recette".equals(RecDep)){
-                                        nouveauSolde4 = ancienSolde4 + montant4;
+                                        nouveauSolde4 = ancienSolde4.add(montant4);
                                     }
                                 }
                                 

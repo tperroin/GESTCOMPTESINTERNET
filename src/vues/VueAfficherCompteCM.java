@@ -6,13 +6,18 @@ package vues;
 
 import com.alee.extended.painter.BorderPainter;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.text.WebTextField;
 import com.toedter.calendar.JYearChooser;
 import controleurs.Controleur;
 import controleurs.CtrlAfficherCompteCM;
+import controleurs.CtrlImpression;
 import java.awt.Color;
 import modele.jtable.TableRowTransferHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import metier.Compta;
 import modele.dao.DaoException;
 import modele.jtable.ModelTableCM;
 
@@ -33,8 +39,14 @@ import modele.jtable.ModelTableCM;
  */
 public class VueAfficherCompteCM extends VueAbstraite{
 
-     DefaultTableModel modeleJTableCM = new ModelTableCM();
+    DefaultTableModel modeleJTableCM = new ModelTableCM();
+     
+    DefaultComboBoxModel modeleComboboxCompta;
     
+    /**
+     *
+     * @param ctrl
+     */
     public VueAfficherCompteCM(Controleur ctrl) {
         super(ctrl);
         initComponents();
@@ -46,6 +58,9 @@ public class VueAfficherCompteCM extends VueAbstraite{
         modeleJTableCM = new ModelTableCM();
            
         jTableCM.setModel(modeleJTableCM);
+        
+        modeleComboboxCompta = new DefaultComboBoxModel();
+        webComboBoxCompta.setModel(modeleComboboxCompta);
         
         jTableCM.setDragEnabled(true);
         jTableCM.setDropMode(DropMode.INSERT_ROWS);
@@ -93,9 +108,14 @@ public class VueAfficherCompteCM extends VueAbstraite{
         jButtonValiderAnnee = new javax.swing.JButton();
         jYearChooser1 = new com.toedter.calendar.JYearChooser();
         jButtonAnnulerAnnee = new javax.swing.JButton();
+        webTextFieldRecherche = new com.alee.laf.text.WebTextField();
+        webButton1 = new com.alee.laf.button.WebButton();
+        webComboBoxCompta = new com.alee.laf.combobox.WebComboBox();
+        webLabelChoisirCompta = new com.alee.laf.label.WebLabel();
         jMenuBarMenu = new javax.swing.JMenuBar();
         jMenuFichier = new javax.swing.JMenu();
         jMenuItemAjouter = new javax.swing.JMenuItem();
+        jMenuItemImprimer = new javax.swing.JMenuItem();
         jMenuItemQuitter = new javax.swing.JMenuItem();
         jMenuAfficher = new javax.swing.JMenu();
         jMenuItemCIO = new javax.swing.JMenuItem();
@@ -206,6 +226,21 @@ public class VueAfficherCompteCM extends VueAbstraite{
             }
         });
 
+        webTextFieldRecherche.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                webTextFieldRechercheKeyPressed(evt);
+            }
+        });
+
+        webButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/search.png"))); // NOI18N
+        webButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                webButton1ActionPerformed(evt);
+            }
+        });
+
+        webLabelChoisirCompta.setText("Choisir comptabilité :");
+
         jMenuFichier.setText("Fichier");
 
         jMenuItemAjouter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
@@ -217,6 +252,16 @@ public class VueAfficherCompteCM extends VueAbstraite{
             }
         });
         jMenuFichier.add(jMenuItemAjouter);
+
+        jMenuItemImprimer.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemImprimer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print.png"))); // NOI18N
+        jMenuItemImprimer.setText("Imprimer...");
+        jMenuItemImprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemImprimerActionPerformed(evt);
+            }
+        });
+        jMenuFichier.add(jMenuItemImprimer);
 
         jMenuItemQuitter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemQuitter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/switch.png"))); // NOI18N
@@ -283,19 +328,26 @@ public class VueAfficherCompteCM extends VueAbstraite{
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1070, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(webLabelChoisirCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(webComboBoxCompta, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonValiderAnnee)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonAnnulerAnnee)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap(24, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(webTextFieldRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(24, 24, 24))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -313,15 +365,22 @@ public class VueAfficherCompteCM extends VueAbstraite{
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButtonValiderAnnee)
-                        .addComponent(jButtonAnnulerAnnee))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(webTextFieldRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(webComboBoxCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(webLabelChoisirCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonValiderAnnee)
+                            .addComponent(jButtonAnnulerAnnee)))
                     .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
-                .addGap(39, 39, 39)
+                .addGap(7, 7, 7)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -361,7 +420,12 @@ public class VueAfficherCompteCM extends VueAbstraite{
     private void jButtonValiderAnneeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValiderAnneeActionPerformed
         try {
             ((CtrlAfficherCompteCM)controleur).viderJtableModel();
-            ((CtrlAfficherCompteCM)controleur).chargerEnregistrement(jYearChooser1.getYear());
+            
+            Compta unCompte = (Compta) getModeleComboboxCompta().getSelectedItem();
+            Integer idCompte = unCompte.getId();
+            
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrement(jYearChooser1.getYear(), idCompte);
+            ((CtrlAfficherCompteCM)controleur).chargerSoldeCompteCM();
         } catch (DaoException ex) {
             Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -390,7 +454,7 @@ public class VueAfficherCompteCM extends VueAbstraite{
 
     private void webButtonRecetteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonRecetteActionPerformed
         try {
-            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Recette", "FALSE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Recette", "FALSE", jYearChooser1.getYear());
         } catch (DaoException ex) {
             Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -398,7 +462,7 @@ public class VueAfficherCompteCM extends VueAbstraite{
 
     private void webButtonDepenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonDepenseActionPerformed
         try {
-            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Dépense", "FALSE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementRecpDepAnt(2, "Dépense", "FALSE", jYearChooser1.getYear());
         } catch (DaoException ex) {
             Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -406,7 +470,7 @@ public class VueAfficherCompteCM extends VueAbstraite{
 
     private void webButtonAnticipationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButtonAnticipationActionPerformed
          try {
-            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementAnt(2, "TRUE");
+            ((CtrlAfficherCompteCM)controleur).chargerEnregistrementAnt(2, "TRUE", jYearChooser1.getYear());
         } catch (DaoException ex) {
             Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -428,178 +492,523 @@ public class VueAfficherCompteCM extends VueAbstraite{
         }
     }//GEN-LAST:event_jMenuItemCMArchActionPerformed
 
+    private void webTextFieldRechercheKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_webTextFieldRechercheKeyPressed
+        
+        Compta unCompte = (Compta) getModeleComboboxCompta().getSelectedItem();
+            Integer idCompte = unCompte.getId();
+        if(evt.getKeyCode() == evt.VK_ENTER){
+            try {
+                ((CtrlAfficherCompteCM)controleur).rechercherValeurEnregistrement(webTextFieldRecherche.getText(), idCompte, jYearChooser1.getYear());
+            } catch (DaoException ex) {
+                Logger.getLogger(VueAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_webTextFieldRechercheKeyPressed
 
+    private void webButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButton1ActionPerformed
+        
+        Compta unCompte = (Compta) getModeleComboboxCompta().getSelectedItem();
+            Integer idCompte = unCompte.getId();
+        try {
+            ((CtrlAfficherCompteCM)controleur).rechercherValeurEnregistrement(webTextFieldRecherche.getText(), idCompte, jYearChooser1.getYear());
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_webButton1ActionPerformed
+
+    private void jMenuItemImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemImprimerActionPerformed
+        try {
+            ((CtrlAfficherCompteCM)controleur).afficherImpression();
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemImprimerActionPerformed
+
+
+    /**
+     *
+     * @return
+     */
     public JButton getjButtonValiderAnnee() {
         return jButtonValiderAnnee;
     }
 
+    /**
+     *
+     * @param jButtonValiderAnnee
+     */
     public void setjButtonValiderAnnee(JButton jButtonValiderAnnee) {
         this.jButtonValiderAnnee = jButtonValiderAnnee;
     }
 
+    /**
+     *
+     * @return
+     */
     public JYearChooser getjYearChooser1() {
         return jYearChooser1;
     }
 
+    /**
+     *
+     * @param jYearChooser1
+     */
     public void setjYearChooser1(JYearChooser jYearChooser1) {
         this.jYearChooser1 = jYearChooser1;
     }
 
        
     
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getModeleJTableCM() {
         return modeleJTableCM;
     }
 
+    /**
+     *
+     * @param modeleJTableCM
+     */
     public void setModeleJTableCM(DefaultTableModel modeleJTableCM) {
         this.modeleJTableCM = modeleJTableCM;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenu getjMenuAfficher() {
         return jMenuAfficher;
     }
 
+    /**
+     *
+     * @param jMenuAfficher
+     */
     public void setjMenuAfficher(JMenu jMenuAfficher) {
         this.jMenuAfficher = jMenuAfficher;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenu getjMenuArchiver() {
         return jMenuArchiver;
     }
 
+    /**
+     *
+     * @param jMenuArchiver
+     */
     public void setjMenuArchiver(JMenu jMenuArchiver) {
         this.jMenuArchiver = jMenuArchiver;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuBar getjMenuBarMenu() {
         return jMenuBarMenu;
     }
 
+    /**
+     *
+     * @param jMenuBarMenu
+     */
     public void setjMenuBarMenu(JMenuBar jMenuBarMenu) {
         this.jMenuBarMenu = jMenuBarMenu;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenu getjMenuFichier() {
         return jMenuFichier;
     }
 
+    /**
+     *
+     * @param jMenuFichier
+     */
     public void setjMenuFichier(JMenu jMenuFichier) {
         this.jMenuFichier = jMenuFichier;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemAjouter() {
         return jMenuItemAjouter;
     }
 
+    /**
+     *
+     * @param jMenuItemAjouter
+     */
     public void setjMenuItemAjouter(JMenuItem jMenuItemAjouter) {
         this.jMenuItemAjouter = jMenuItemAjouter;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemCIO() {
         return jMenuItemCIO;
     }
 
+    /**
+     *
+     * @param jMenuItemCIO
+     */
     public void setjMenuItemCIO(JMenuItem jMenuItemCIO) {
         this.jMenuItemCIO = jMenuItemCIO;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemCIOArch() {
         return jMenuItemCIOArch;
     }
 
+    /**
+     *
+     * @param jMenuItemCIOArch
+     */
     public void setjMenuItemCIOArch(JMenuItem jMenuItemCIOArch) {
         this.jMenuItemCIOArch = jMenuItemCIOArch;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemCM() {
         return jMenuItemCM;
     }
 
+    /**
+     *
+     * @param jMenuItemCM
+     */
     public void setjMenuItemCM(JMenuItem jMenuItemCM) {
         this.jMenuItemCM = jMenuItemCM;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemCMArch() {
         return jMenuItemCMArch;
     }
 
+    /**
+     *
+     * @param jMenuItemCMArch
+     */
     public void setjMenuItemCMArch(JMenuItem jMenuItemCMArch) {
         this.jMenuItemCMArch = jMenuItemCMArch;
     }
 
+    /**
+     *
+     * @return
+     */
     public JMenuItem getjMenuItemQuitter() {
         return jMenuItemQuitter;
     }
 
+    /**
+     *
+     * @param jMenuItemQuitter
+     */
     public void setjMenuItemQuitter(JMenuItem jMenuItemQuitter) {
         this.jMenuItemQuitter = jMenuItemQuitter;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getjScrollPane1() {
         return jScrollPane1;
     }
 
+    /**
+     *
+     * @param jScrollPane1
+     */
     public void setjScrollPane1(JScrollPane jScrollPane1) {
         this.jScrollPane1 = jScrollPane1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTable getjTableCM() {
         return jTableCM;
     }
 
+    /**
+     *
+     * @param jTableCM
+     */
     public void setjTableCM(JTable jTableCM) {
         this.jTableCM = jTableCM;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabelSoldeCompteCIO() {
         return jLabelSoldeCompteCIO;
     }
 
+    /**
+     *
+     * @param jLabelSoldeCompteCIO
+     */
     public void setjLabelSoldeCompteCIO(JLabel jLabelSoldeCompteCIO) {
         this.jLabelSoldeCompteCIO = jLabelSoldeCompteCIO;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getjTextFieldSoldeCompteCIO() {
         return jTextFieldSoldeCompteCIO;
     }
 
+    /**
+     *
+     * @param jTextFieldSoldeCompteCIO
+     */
     public void setjTextFieldSoldeCompteCIO(JTextField jTextFieldSoldeCompteCIO) {
         this.jTextFieldSoldeCompteCIO = jTextFieldSoldeCompteCIO;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabelSoldeCompteCIOSansAnticipation() {
         return jLabelSoldeCompteCIOSansAnticipation;
     }
 
+    /**
+     *
+     * @param jLabelSoldeCompteCIOSansAnticipation
+     */
     public void setjLabelSoldeCompteCIOSansAnticipation(JLabel jLabelSoldeCompteCIOSansAnticipation) {
         this.jLabelSoldeCompteCIOSansAnticipation = jLabelSoldeCompteCIOSansAnticipation;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getjTextFieldSoldeCompteCIOSansAnticipation() {
         return jTextFieldSoldeCompteCIOSansAnticipation;
     }
 
+    /**
+     *
+     * @param jTextFieldSoldeCompteCIOSansAnticipation
+     */
     public void setjTextFieldSoldeCompteCIOSansAnticipation(JTextField jTextFieldSoldeCompteCIOSansAnticipation) {
         this.jTextFieldSoldeCompteCIOSansAnticipation = jTextFieldSoldeCompteCIOSansAnticipation;
     }
 
     
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabelLegende() {
         return jLabelLegende;
     }
 
+    /**
+     *
+     * @param jLabelLegende
+     */
     public void setjLabelLegende(JLabel jLabelLegende) {
         this.jLabelLegende = jLabelLegende;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getjPanelLegende() {
         return jPanelLegende;
     }
 
+    /**
+     *
+     * @param jPanelLegende
+     */
     public void setjPanelLegende(JPanel jPanelLegende) {
         this.jPanelLegende = jPanelLegende;
     }
 
+    /**
+     *
+     * @return
+     */
+    public DefaultComboBoxModel getModeleComboboxCompta() {
+        return modeleComboboxCompta;
+    }
+
+    /**
+     *
+     * @param modeleComboboxCompta
+     */
+    public void setModeleComboboxCompta(DefaultComboBoxModel modeleComboboxCompta) {
+        this.modeleComboboxCompta = modeleComboboxCompta;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public JButton getjButtonAnnulerAnnee() {
+        return jButtonAnnulerAnnee;
+    }
+
+    /**
+     *
+     * @param jButtonAnnulerAnnee
+     */
+    public void setjButtonAnnulerAnnee(JButton jButtonAnnulerAnnee) {
+        this.jButtonAnnulerAnnee = jButtonAnnulerAnnee;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebButton getWebButton1() {
+        return webButton1;
+    }
+
+    /**
+     *
+     * @param webButton1
+     */
+    public void setWebButton1(WebButton webButton1) {
+        this.webButton1 = webButton1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebButton getWebButtonAnticipation() {
+        return webButtonAnticipation;
+    }
+
+    /**
+     *
+     * @param webButtonAnticipation
+     */
+    public void setWebButtonAnticipation(WebButton webButtonAnticipation) {
+        this.webButtonAnticipation = webButtonAnticipation;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebButton getWebButtonDepense() {
+        return webButtonDepense;
+    }
+
+    /**
+     *
+     * @param webButtonDepense
+     */
+    public void setWebButtonDepense(WebButton webButtonDepense) {
+        this.webButtonDepense = webButtonDepense;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebButton getWebButtonRecette() {
+        return webButtonRecette;
+    }
+
+    /**
+     *
+     * @param webButtonRecette
+     */
+    public void setWebButtonRecette(WebButton webButtonRecette) {
+        this.webButtonRecette = webButtonRecette;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebComboBox getWebComboBoxCompta() {
+        return webComboBoxCompta;
+    }
+
+    /**
+     *
+     * @param webComboBoxCompta
+     */
+    public void setWebComboBoxCompta(WebComboBox webComboBoxCompta) {
+        this.webComboBoxCompta = webComboBoxCompta;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebLabel getWebLabelChoisirCompta() {
+        return webLabelChoisirCompta;
+    }
+
+    /**
+     *
+     * @param webLabelChoisirCompta
+     */
+    public void setWebLabelChoisirCompta(WebLabel webLabelChoisirCompta) {
+        this.webLabelChoisirCompta = webLabelChoisirCompta;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebTextField getWebTextFieldRecherche() {
+        return webTextFieldRecherche;
+    }
+
+    /**
+     *
+     * @param webTextFieldRecherche
+     */
+    public void setWebTextFieldRecherche(WebTextField webTextFieldRecherche) {
+        this.webTextFieldRecherche = webTextFieldRecherche;
+    }
+
+    
        
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAnnulerAnnee;
@@ -616,6 +1025,7 @@ public class VueAfficherCompteCM extends VueAbstraite{
     private javax.swing.JMenuItem jMenuItemCIOArch;
     private javax.swing.JMenuItem jMenuItemCM;
     private javax.swing.JMenuItem jMenuItemCMArch;
+    private javax.swing.JMenuItem jMenuItemImprimer;
     private javax.swing.JMenuItem jMenuItemQuitter;
     private javax.swing.JPanel jPanelLegende;
     private javax.swing.JScrollPane jScrollPane1;
@@ -623,9 +1033,13 @@ public class VueAfficherCompteCM extends VueAbstraite{
     private javax.swing.JTextField jTextFieldSoldeCompteCIO;
     private javax.swing.JTextField jTextFieldSoldeCompteCIOSansAnticipation;
     private com.toedter.calendar.JYearChooser jYearChooser1;
+    private com.alee.laf.button.WebButton webButton1;
     private com.alee.laf.button.WebButton webButtonAnticipation;
     private com.alee.laf.button.WebButton webButtonDepense;
     private com.alee.laf.button.WebButton webButtonRecette;
+    private com.alee.laf.combobox.WebComboBox webComboBoxCompta;
+    private com.alee.laf.label.WebLabel webLabelChoisirCompta;
+    private com.alee.laf.text.WebTextField webTextFieldRecherche;
     // End of variables declaration//GEN-END:variables
 
    

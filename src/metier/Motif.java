@@ -17,12 +17,22 @@ public class Motif  {
     private Boolean recetteDepense;
     Enregistrement enregistrements[];
 
+    /**
+     *
+     */
     public Motif() {
         this.id = null;
         this.libelle = "";
         this.recetteDepense = null;
     }
     
+    /**
+     *
+     * @param id
+     * @param libelle
+     * @param recetteDepense
+     * @param enregistrements
+     */
     public Motif(Integer id, String libelle, Boolean recetteDepense, Enregistrement[] enregistrements) {
         this.id = id;
         this.libelle = libelle;
@@ -30,40 +40,76 @@ public class Motif  {
         this.enregistrements = enregistrements;
     }
     
+    /**
+     *
+     * @param idMotif
+     */
     public Motif(String idMotif) {
         id = getId();
         libelle = getLibelle();
         recetteDepense = getRecetteDepense();
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLibelle() {
         return libelle;
     }
 
+    /**
+     *
+     * @param libelle
+     */
     public void setLibelle(String libelle) {
         this.libelle = libelle;
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean getRecetteDepense() {
         return recetteDepense;
     }
 
+    /**
+     *
+     * @param recetteDepense
+     */
     public void setRecetteDepense(Boolean recetteDepense) {
         this.recetteDepense = recetteDepense;
     }
 
+    /**
+     *
+     * @return
+     */
     public Enregistrement[] getEnregistrement() {
         return enregistrements;
     }
 
+    /**
+     *
+     * @param enregistrements
+     */
     public void setEnregistrement(Enregistrement[] enregistrements) {
         this.enregistrements = enregistrements;
     }

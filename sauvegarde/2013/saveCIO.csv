@@ -1,0 +1,5 @@
+"ID";"LIBELLE";"MODE DE REGLEMENT";"MOTIF";"ETAT";"RECETTE ou DEPENSE";"DATE ENREGISTREMENT";"MONTANT";"ANCIEN SOLDE";"NOUVEAU SOLDE";"DATE FACTURE";"NUMCHQ";"ANTICIPATION";"ORDRE"
+"5";"ADS";"Remise de chèques";"Parts";"Terminé";"Recette";"11 February 2013";"123.00";"0.00";"123.00";"gyhuj";"";"FALSE";"1"
+"6";"ADS";"Remise de chèques";"Parts";"Terminé";"Recette";"11 February 2013";"32.00";"123.00";"168.00";"gh";"";"FALSE";"2"
+"7";"GENERALI LEADER suppl retraite";"Remise de chèques";"Parts";"Terminé";"Recette";"11 February 2013";"24.00";"168.00";"192.00";"";"";"FALSE";"3"
+"8";"HILTI";"Remise de chèques";"Parts";"Terminé";"Recette";"11 February 2013";"32.00";"192.00";"224.00";"";"";"FALSE";"4"

@@ -1,20 +1,23 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- * 
- */
 package controleurs;
 
+import com.alee.laf.optionpane.WebOptionPane;
+import com.alee.utils.swing.WebDefaultCellEditor;
 import modele.jtable.MyTableCellRenderer;
 import modele.jtable.TableColumnAdjuster;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
@@ -23,9 +26,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import metier.Compte;
+import metier.Compta;
 import metier.Enregistrement;
 import metier.Etat;
+import metier.Libelle;
 import metier.ModeReglement;
 import metier.Motif;
 import modele.dao.DaoException;
@@ -33,13 +37,19 @@ import modele.dao.DaoH2;
 import modele.jtable.ButtonColumn;
 import modele.jtable.ImageRenderer;
 import modele.jtable.ModelTableCM;
+import modele.jtable.TableCellListener;
+import vues.VueAfficherCompteCIO;
 import vues.VueAfficherCompteCM;
 import vues.VueAjouterEnregistrement;
 
 
 /**
+ * 
+ * Permet de gérer les données et les actions pour la vue VueAfficherCompteCM. 
+ * C'est une classe fille de Controleur.
+ * Elle a donc une vue et un controleur propre.
  *
- * @author btssio
+ * @author Perroin Thibault
  */
 public class CtrlAfficherCompteCM extends Controleur {
     
@@ -50,7 +60,18 @@ public class CtrlAfficherCompteCM extends Controleur {
     CtrlAfficherCompteCIO ctrlAfficherCompteCIO;
     CtrlArchivageCIO ctrlArchivageCIO;
     CtrlArchivageCM ctrlArchivageCM;
+    CtrlImpression ctrlImpression;
     
+    
+    
+    /**
+     * Le constructeur du controleur de la vue VueAfficherCompteCIO
+     *
+     * @param ctrl
+     *          Le controleur à appeler.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public CtrlAfficherCompteCM(Controleur ctrl) throws DaoException {
         super(ctrl);
         // Ouvrir une connexion JDBC vers la base de données visée
@@ -60,8 +81,9 @@ public class CtrlAfficherCompteCM extends Controleur {
             // initialiser l'interface graphique
             setVue(new VueAfficherCompteCM(this));
             this.afficherVue();
-            chargerSoldeCompteCM();
             afficherColonnes();
+            chargerListeCompta("%MUTUEL%");
+            chargerSoldeCompteCM();
             
             
         } catch (DaoException ex) {
@@ -70,6 +92,10 @@ public class CtrlAfficherCompteCM extends Controleur {
         
     }
     
+    /**
+     * Permet de cacher la vue courante.
+     *
+     */
     public void affichertAnnuler() {
         
         this.getCtrl().afficherVue();
@@ -77,6 +103,13 @@ public class CtrlAfficherCompteCM extends Controleur {
         
     } 
     
+    /**
+     * 
+     * Permet d'afficher la vue VueAjouterEnregistrement.
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public void afficherAjouterEnregistrement() throws DaoException{
         if (ctrlAjouterEnregistrement == null){
             ctrlAjouterEnregistrement = new CtrlAjouterEnregistrement(this);
@@ -86,6 +119,12 @@ public class CtrlAfficherCompteCM extends Controleur {
         this.cacherVue();
     }
     
+    /**
+     * Permet d'afficher la vue VueAfficherCompteCIO.
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public void afficherAfficherCompteCIO() throws DaoException{
         if (ctrlAfficherCompteCIO == null){
             ctrlAfficherCompteCIO = new CtrlAfficherCompteCIO(this);
@@ -95,6 +134,13 @@ public class CtrlAfficherCompteCM extends Controleur {
         this.cacherVue();
     }
     
+    /**
+     * 
+     * Permet d'afficher la vue VueAfficherCompteCM.
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public void afficherAfficherCompteCM() throws DaoException{
         if (ctrlAfficherCompteCM == null){
             ctrlAfficherCompteCM = new CtrlAfficherCompteCM(this);
@@ -104,6 +150,13 @@ public class CtrlAfficherCompteCM extends Controleur {
         this.cacherVue();
     }
     
+    /**
+     * 
+     * Permet d'afficher la vue VueArchivageCIO
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public void afficherArchivageCIO() throws DaoException{
         if (ctrlArchivageCIO == null){
             ctrlArchivageCIO = new CtrlArchivageCIO(this);
@@ -113,6 +166,13 @@ public class CtrlAfficherCompteCM extends Controleur {
         this.cacherVue();
     }
     
+    /**
+     * 
+     * Permet d'afficher la vue VueArchivageCM.
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
     public void afficherArchivageCM() throws DaoException{
         if (ctrlArchivageCM == null){
             ctrlArchivageCM = new CtrlArchivageCM(this);
@@ -121,8 +181,28 @@ public class CtrlAfficherCompteCM extends Controleur {
         }
         this.cacherVue();
     }
+    /**
+     * 
+     * Permet d'afficher la vue VueImpression
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
+    public void afficherImpression() throws DaoException{
+        if (ctrlImpression == null){
+            ctrlImpression = new CtrlImpression(this);
+        }else{
+            ctrlImpression.afficherVue();
+        }
+        this.cacherVue();
+    }
     
     
+    /**
+     * 
+     * Permet d'afficher les colonnes de la JTable des comptes du Crédit Mutuel.
+     *
+     */
     public void afficherColonnes(){
         
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Déplacer");
@@ -134,58 +214,169 @@ public class CtrlAfficherCompteCM extends Controleur {
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Numéro de chèque");
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Montant");
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Solde");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Etat");
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Anticipation");
-        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Modifier");
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("RecDep");
         ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Supprimer");
-        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("Etat");
+        ((VueAfficherCompteCM)vue).getModeleJTableCM().addColumn("idCompte");
         
     }
     
-    public void chargerEnregistrement(int annee) throws DaoException {
+    /**
+     * 
+     * Permet de charger les enregistrements bancaires en fonction d'une annee et d'un compte.
+     *
+     * @param annee
+     *          L'annee que l'on souhaite charger.
+     * @param idCompte
+     *          L'id du compte que l'on souhaite charger.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     *          
+     */
+    public void chargerEnregistrement(int annee, int idCompte) throws DaoException {
         
         
-        List<Enregistrement> desEnregistrements = dao.lireTousLesEnregistrements(2, "%"+String.valueOf(annee) +"%");
+        List<Enregistrement> desEnregistrements = dao.lireTousLesEnregistrements(idCompte, "%"+String.valueOf(annee) +"%");
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.FRANCE);
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdEtat()});   
+            String date = dateFormat.format(unEnregistrement.getDate());
+            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",date, unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(),Boolean.parseBoolean(unEnregistrement.getAnticipation()), unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdCompte()});   
         }
         
         aspectJtable();
         
     }
     
-    public void chargerEnregistrementRecpDepAnt(Integer id, String recDep, String anticipation) throws DaoException {
+    /**
+     *
+     * Permet de charger la JCombobox avec les comptabilités en fonction d'une banque.
+     * 
+     * @param banque
+     *          Nom de la banque permettant de charger les comptabilités.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
+    public void chargerListeCompta(String banque) throws DaoException {
+        List<Compta> desComptas = dao.lireToutesLesComptas(banque);
+        for (Compta uneCompta : desComptas) {
+            ((VueAfficherCompteCM)vue).getModeleComboboxCompta().addElement(uneCompta);
+        }
+    }
+    
+    /**
+     * 
+     * Permet de charger les enregistrements en fonction dl'identifiant du compte, de l'année
+     * et de trois critères :
+     *          - enregistrements si c'est une recette
+     *          - enregistrements si c'est une dépense
+     *          - enregistrements si c'est une anticipation
+     *
+     * @param id
+     *          L'identifiant du compte interrogé.
+     * @param recDep
+     *          Prend pour valeur une "Recette" ou une "Dépense".
+     * @param anticipation
+     *          Renvoi VRAI ou FAUX en fonction du critère choisi.
+     * @param annee
+     *          Année des enregistrements à charger.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
+    public void chargerEnregistrementRecpDepAnt(Integer id, String recDep, String anticipation, int annee) throws DaoException {
            
-        List<Enregistrement> desEnregistrements = dao.lireEnregistrementsRecDepAnt(id, recDep, anticipation);
+        List<Enregistrement> desEnregistrements = dao.lireEnregistrementsRecDepAnt(id, recDep, anticipation, "%"+String.valueOf(annee) +"%");
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.FRANCE);
         
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdEtat()});   
+            String date = dateFormat.format(unEnregistrement.getDate());
+           ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",date, unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(),Boolean.parseBoolean(unEnregistrement.getAnticipation()), unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdCompte()});   
         }
         
         aspectJtable();
         
     }
         
-    public void chargerEnregistrementAnt(Integer id, String anticipation) throws DaoException {
+    /**
+     * 
+     * Permet de charger les enregistrements anticipés en fonction d'un identifiant de compte et l'année.
+     *
+     * @param id
+     *          L'identifiant du compte sélectionné.
+     * @param anticipation
+     *          Retourne VRAI ou FAUX en fonction du critère choisi.
+     * @param annee
+     *          Année des enregistrements à charger.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
+    public void chargerEnregistrementAnt(Integer id, String anticipation, int annee) throws DaoException {
            
-        List<Enregistrement> desEnregistrements = dao.lireEnregistrementsAnt(id, anticipation);
+        List<Enregistrement> desEnregistrements = dao.lireEnregistrementsAnt(id, anticipation, "%"+String.valueOf(annee) +"%");
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.FRANCE);
         
         viderJtableModel();
         
         for (Enregistrement unEnregistrement : desEnregistrements) {
-            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",unEnregistrement.getDate(), unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), Boolean.parseBoolean(unEnregistrement.getAnticipation()), "M", unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdEtat()});   
-         }
+            String date = dateFormat.format(unEnregistrement.getDate());
+            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",date, unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(),Boolean.parseBoolean(unEnregistrement.getAnticipation()), unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdCompte()});   
+        }
         
         aspectJtable();
         
     }
+    
+     /**
+      * 
+      * Permet de rechercher une valeur dans l'ensemble des comptes
+     *
+     * @param valeur
+     *          La valeur recherchée.
+     * @param idCompte
+     *          Le compte dans lequel chercher la valeur.
+     * @param annee
+     *          L'année pour la recherche.
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     */
+    public void rechercherValeurEnregistrement(String valeur, Integer idCompte, int annee) throws DaoException{
+        List<Enregistrement> desEnregistrements = dao.rechercherValeurEnregistrement(valeur, idCompte, "%"+String.valueOf(annee) +"%");
+        
+        if(desEnregistrements.isEmpty()==true){
+            WebOptionPane.showMessageDialog ( ((VueAfficherCompteCM)vue), "La recherche : " + valeur + " n'a donnée aucun résultat", "Recherche", WebOptionPane.INFORMATION_MESSAGE );
+            
+        }
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.FRANCE);
+        
+        viderJtableModel();
+        
+        for (Enregistrement unEnregistrement : desEnregistrements) {
+            String date = dateFormat.format(unEnregistrement.getDate());
+            ((VueAfficherCompteCM)vue).getModeleJTableCM().addRow(new Object[]{"",date, unEnregistrement.getIdLibelle(), unEnregistrement.getMotif(), unEnregistrement.getDateFacture(), unEnregistrement.getModeReglement(), unEnregistrement.getNumCHQ(), unEnregistrement.getMontant(), unEnregistrement.getNouveauSolde(), unEnregistrement.getIdEtat(),Boolean.parseBoolean(unEnregistrement.getAnticipation()), unEnregistrement.getRecetteDepense(), "X", unEnregistrement.getIdCompte()});   
+        }
+        
+        aspectJtable();
+    }
+    
+    /**
+     * 
+     * Permet de supprimer un enregistrement après le clique sur le bouton en fin de ligne d'un enregistrement.
+     */
     
     Action supprimer = new AbstractAction() {
 
         public void actionPerformed(ActionEvent e) {
+            
+            Compta unCompte = (Compta) ((VueAfficherCompteCM)vue).getModeleComboboxCompta().getSelectedItem();
+            Integer idCompte = unCompte.getId();
+        
             int rep = JOptionPane.showConfirmDialog(((VueAfficherCompteCM)vue), "Supprimer l'enregistrement\nEtes-vous sûr(e) ?", "Affichage des enregistrements", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (rep == JOptionPane.YES_OPTION) {
             JTable table = (JTable)e.getSource();
@@ -193,8 +384,10 @@ public class CtrlAfficherCompteCM extends Controleur {
             ((ModelTableCM)table.getModel()).removeRow(modelRow);
             int nbEnregistrement = 0;
             try {
-                dao.supprimerEnregistrementFromOrdre(modelRow + 1, 2);
-                nbEnregistrement = dao.compterNbEnregistrement();
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
+                dao.supprimerEnregistrementFromOrdre(modelRow + 1, idCompte, "%" + String.valueOf(annee) + "%");
+                
+                nbEnregistrement = dao.compterNbEnregistrement("%" + String.valueOf(annee) + "%", idCompte);
             } catch (DaoException ex) {
                 Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -202,24 +395,25 @@ public class CtrlAfficherCompteCM extends Controleur {
             int j = modelRow;
             for(i=modelRow+1;i<=nbEnregistrement;i++){
                     
-                try {  
+                try { 
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear(); 
                     BigDecimal nouveauSolde = null;
                     BigDecimal ancienSolde = null;
                     BigDecimal bigDecimalMontant = null;
                     
-                    bigDecimalMontant = new BigDecimal(dao.lireMontantFromOrdre(i+1, 2));
-                    ancienSolde = new BigDecimal(dao.lireNouveauSoldeFromOrdre(i-1, 2));
+                    bigDecimalMontant = dao.lireMontantFromOrdre(i+1, idCompte, "%" + String.valueOf(annee) + "%");
+                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i-1, idCompte, "%" + String.valueOf(annee) + "%");
                     
-                    if(dao.verifierRecDep(i+1, 2) == true){
+                    if(dao.verifierRecDep(i+1, idCompte, "%" + String.valueOf(annee) + "%") == true){
                         nouveauSolde = ancienSolde.subtract(bigDecimalMontant);
                     }else{
                         nouveauSolde = bigDecimalMontant.add(ancienSolde);
                     }
                     
-                    Integer idEnr = dao.lireIdEnrFromOrdreCompte(i+1, 2);
+                    Integer idEnr = dao.lireIdEnrFromOrdreCompte(i+1, idCompte, "%" + String.valueOf(annee) + "%");
                     
-                    dao.mettreAJourOrdreInfSup(i,i+1 , idEnr, 2);
-                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 2, i);
+                    dao.mettreAJourOrdreInfSup(i,i+1 , idEnr, idCompte, "%" + String.valueOf(annee) + "%");
+                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, idCompte, i, "%" + String.valueOf(annee) + "%");
                     
                 } catch (DaoException ex) {
                     Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
@@ -227,30 +421,151 @@ public class CtrlAfficherCompteCM extends Controleur {
                     
                 
                 }
+            try {
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
+                dao.mettreAJourSoldeCompte(idCompte, dao.recupererDernierSolde("%" + String.valueOf(annee) + "%", idCompte));
+                viderJtableModel();
+                chargerEnregistrement(((VueAfficherCompteCM)vue).getjYearChooser1().getYear(), idCompte);
+                chargerSoldeCompteCM();
+            } catch (DaoException ex) {
+                Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         }
     };
     
-    
-    
-    Action modifier = new AbstractAction(){
         
-        public void actionPerformed(ActionEvent e){
+    /**
+     *
+     * Permet d'affecter un aspect à la JTable et de définir les actions sur les différents boutons qu'elle contient.
+     */
+    public void aspectJtable(){
+        
+        
+        JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
             
-            int modelRow = Integer.valueOf( e.getActionCommand() );
+        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+                   
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            TableColumnAdjuster tca = new TableColumnAdjuster(table);
+            tca.adjustColumns();
             
-            JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
+            table.getColumnModel().getColumn(11).setMinWidth(0);
+            table.getColumnModel().getColumn(11).setMaxWidth(0);
+            table.getColumnModel().getColumn(13).setMinWidth(0);
+            table.getColumnModel().getColumn(13).setMaxWidth(0);
             
-            Object date = table.getValueAt(modelRow, 0);
-            Object libelle = table.getValueAt(modelRow, 1);
-            Object motif = table.getValueAt(modelRow, 2);
-            Object dateFacture = table.getValueAt(modelRow, 3);
-            Object modeReglement = table.getValueAt(modelRow, 4);
-            Object numchq = table.getValueAt(modelRow, 5);
-            Object montant = table.getValueAt(modelRow, 6);
-            Object etat = table.getValueAt(modelRow, 8);
-            Object anticipation = table.getValueAt(modelRow, 9);
+            
+            TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+            table.setRowSorter(sorter);
+            
+            Action delete = null;
+            ButtonColumn boutonAnnuler = new ButtonColumn(table, supprimer, 12);
+            
+            TableColumn tcolumnas = table.getColumnModel().getColumn(10); 
+            tcolumnas.setCellRenderer(table.getDefaultRenderer(Boolean.class)); 
+            tcolumnas.setCellEditor(table.getDefaultEditor(Boolean.class));
+            
+            table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+                        
+            TableColumn colonneLibelle = table.getColumnModel ().getColumn (2);
+            TableColumn colonneMotif = table.getColumnModel().getColumn(3);
+            TableColumn colonneModeReglement = table.getColumnModel ().getColumn (5);
+            TableColumn colonneEtat = table.getColumnModel().getColumn(9);
+            
+            colonneLibelle.setCellRenderer(new MyTableCellRenderer());
+            colonneMotif.setCellRenderer(new MyTableCellRenderer());
+            colonneModeReglement.setCellRenderer(new MyTableCellRenderer());
+            colonneEtat.setCellRenderer(new MyTableCellRenderer());
+            
+            JComboBox comboboxLibelle = new JComboBox();
+            JComboBox comboboxMotif = new JComboBox();
+            JComboBox comboboxModeReglement = new JComboBox();
+            JComboBox comboboxEtat = new JComboBox();
+            
+            List<Libelle> desLibelles = null;
+            List<Motif> desMotifs = null;
+            List<ModeReglement> desModesReglement = null;
+            List<Etat> desEtats = null;
+            
+            try {
+                desLibelles = dao.lireTousLesLibelles();
+                desMotifs = dao.lireTousLesMotifs();
+                desModesReglement = dao.lireTousLesModesReglements();
+                desEtats= dao.lireTousLesEats();
+            } catch (DaoException ex) {
+                Logger.getLogger(CtrlAfficherCompteCIO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            for (Libelle unLibelle : desLibelles) {
+                comboboxLibelle.addItem(unLibelle);
+            }
+            for(Motif unMotif : desMotifs){
+                comboboxMotif.addItem(unMotif);
+            }
+            for(ModeReglement unModeReglement : desModesReglement){
+                comboboxModeReglement.addItem(unModeReglement);
+            }
+            for(Etat unEtat : desEtats){
+                comboboxEtat.addItem(unEtat);
+            }
+            
+            
+            colonneLibelle.setCellEditor ( new WebDefaultCellEditor ( comboboxLibelle ) );
+            colonneMotif.setCellEditor ( new WebDefaultCellEditor ( comboboxMotif ) );
+            colonneModeReglement.setCellEditor ( new WebDefaultCellEditor ( comboboxModeReglement ) );
+            colonneEtat.setCellEditor(new WebDefaultCellEditor(comboboxEtat));
+            
+            comboboxLibelle.setEditable(true);
+            
+            try{
+            TableCellListener tcl = new TableCellListener(table, action);
+            }catch(Exception e){
+                
+            } 
+                
+    }
+    
+    /**
+     * Permet de modifier un enregistrement en prenant en compte le calcul des soldes.
+     */
+
+    Action action = new AbstractAction()
+{
+    public void actionPerformed(ActionEvent e)
+    {
+        
+        Compta unCompte = (Compta) ((VueAfficherCompteCM)vue).getModeleComboboxCompta().getSelectedItem();
+        Integer idCompte = unCompte.getId();
+        
+        System.out.print(idCompte);
+            
+        TableCellListener tcl = (TableCellListener)e.getSource();
+        int modelRow = tcl.getRow();
+        
+        JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
+            
+            Object date = table.getValueAt(modelRow, 1);
+            Object libelle = table.getValueAt(modelRow, 2);
+            Object motif = table.getValueAt(modelRow, 3);
+            Object dateFacture = table.getValueAt(modelRow, 4);
+            Object modeReglement = table.getValueAt(modelRow, 5);
+            Object numchq = table.getValueAt(modelRow, 6);
+            Object montant = table.getValueAt(modelRow, 7);
+            Object etat = table.getValueAt(modelRow, 9);
+            Object anticipation = table.getValueAt(modelRow, 10);
             Object recdep = table.getValueAt(modelRow, 11);
+            
+            Date dateEnr = null;
+            SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyyy", Locale.FRANCE);
+            SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss" );
+            String textDate = date.toString();
+            try {
+                dateEnr = df.parse(textDate);
+            } catch (Exception ebt) {
+                System.out.println("Error while parsing date" );
+                ebt.printStackTrace();
+            }
             
             Integer idLibelle = null;
             Integer idModeReglement = null;
@@ -262,17 +577,19 @@ public class CtrlAfficherCompteCM extends Controleur {
             int nbEnregistrement = 0;
             
             try {
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
                 idLibelle = dao.lireIdLibelleFromLibelle(libelle.toString());
                 idModeReglement = dao.lireIdModeReglementFromLibelle(modeReglement.toString());
                 idEtat = dao.lireIdEtatFromLibelle(etat.toString());
                 idMotif = dao.lireIdMotifFromLibelle(motif.toString());
                 bigDecimalMontant = new BigDecimal(montant.toString());
-                ancienSolde = new BigDecimal(dao.lireNouveauSoldeFromOrdre(modelRow, 2));
-                nbEnregistrement = dao.compterNbEnregistrement();
+                ancienSolde = dao.lireNouveauSoldeFromOrdre(modelRow, idCompte, "%" + String.valueOf(annee) + "%");
+                
+                nbEnregistrement = dao.compterNbEnregistrement("%" + String.valueOf(annee) + "%", idCompte);
                 
                 if(idLibelle == null){
                     Integer dernierIdLibelle = dao.recupererDernierIdLibelle() + 1;
-                    dao.ajouterLibelle(dernierIdLibelle, libelle.toString());
+                    dao.ajouterLibelle(dernierIdLibelle, libelle.toString(), idCompte);
                     idLibelle = dao.lireIdLibelleFromLibelle(libelle.toString());
                 }
                                 
@@ -281,18 +598,20 @@ public class CtrlAfficherCompteCM extends Controleur {
             }
             try {
                 
-                 BigDecimal ancienMontant = new BigDecimal(dao.lireMontantFromOrdre(modelRow+1, 2)).setScale(2, RoundingMode.FLOOR);
-                BigDecimal nouveauMontant = bigDecimalMontant.setScale(2);
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
+                 BigDecimal ancienMontant = new BigDecimal(""+dao.lireMontantFromOrdre(modelRow+1, idCompte, "%" + String.valueOf(annee) + "%")).setScale(2);
+                BigDecimal nouveauMontant = new BigDecimal(""+bigDecimalMontant.setScale(2));
                     
                     if(ancienMontant.compareTo(nouveauMontant) == 1){
-                        dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), bigDecimalMontant, new BigDecimal(dao.lireNouveauSoldeFromOrdre(modelRow+1, 2)), dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), 2);
+                        dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, new java.sql.Date(dateEnr.getTime()), bigDecimalMontant, dao.lireNouveauSoldeFromOrdre(modelRow+1, idCompte, "%" + String.valueOf(annee) + "%"), dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), idCompte, "%" + String.valueOf(annee) + "%");
                     }else{
                         if("Dépense".equals(recdep.toString())){
-                            dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), bigDecimalMontant, ancienSolde.subtract(bigDecimalMontant),dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), 2);
-           
+                            
+                            dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, new java.sql.Date(dateEnr.getTime()), bigDecimalMontant, ancienSolde.subtract(bigDecimalMontant),dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), idCompte, "%" + String.valueOf(annee) + "%");
+                            
                         }else{
 
-                            dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, date.toString(), bigDecimalMontant, ancienSolde.add(bigDecimalMontant), dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), 2);
+                            dao.modifierUnEnregistrementFromOrdre(modelRow+1, idLibelle,idModeReglement , idEtat, idMotif, new java.sql.Date(dateEnr.getTime()), bigDecimalMontant, ancienSolde.add(bigDecimalMontant), dateFacture.toString(), Boolean.parseBoolean(anticipation.toString()), numchq.toString(), idCompte, "%" + String.valueOf(annee) + "%");
                          }
                         
                     }
@@ -304,69 +623,55 @@ public class CtrlAfficherCompteCM extends Controleur {
             for(i=modelRow+1; i<nbEnregistrement; i++){
                 
                 try {
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
                     
-                    
-                    bigDecimalMontant = new BigDecimal(dao.lireMontantFromOrdre(i+1, 2));
-                    ancienSolde = new BigDecimal(dao.lireNouveauSoldeFromOrdre(i, 2));
+                    bigDecimalMontant = dao.lireMontantFromOrdre(i+1, idCompte, "%" + String.valueOf(annee) + "%");
+                    ancienSolde = dao.lireNouveauSoldeFromOrdre(i, idCompte, "%" + String.valueOf(annee) + "%");
                     BigDecimal nouveauSolde = null;
                     
-                    if(dao.verifierRecDep(i+1, 2) == true){
+                    if(dao.verifierRecDep(i+1, idCompte, "%" + String.valueOf(annee) + "%") == true){
                         nouveauSolde = ancienSolde.subtract(bigDecimalMontant);
                     }else{
                         nouveauSolde = bigDecimalMontant.add(ancienSolde);
                     }
                     
-                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, 2, i+1);
-                } catch (DaoException ex) {
-                    Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
+                    dao.mettreAJourLesSoldes(nouveauSolde, ancienSolde, idCompte, i+1, "%" + String.valueOf(annee) + "%");
+                    
+                } catch (Exception ex) {
+                    
                 }
             }
             try {
-                dao.mettreAJourSoldeCompte(2, new BigDecimal(dao.recupererDernierSolde(2)));
+                int annee = ((VueAfficherCompteCM)vue).getjYearChooser1().getYear();
+                dao.mettreAJourSoldeCompte(idCompte, dao.recupererDernierSolde("%" + String.valueOf(annee) + "%", idCompte));
+                viderJtableModel();
+                chargerEnregistrement(((VueAfficherCompteCM)vue).getjYearChooser1().getYear(), idCompte);
+                chargerSoldeCompteCM();
             } catch (DaoException ex) {
                 Logger.getLogger(CtrlAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
             }
+        
+            WebOptionPane.showMessageDialog ( ((VueAfficherCompteCM)vue), "Modification effectuée : " + tcl.getOldValue() + " remplacé par "+ tcl.getNewValue(), "Modification", WebOptionPane.INFORMATION_MESSAGE );
+             
         }
     };
-    
-    public void aspectJtable(){
-        
-        
-        JTable table = ((VueAfficherCompteCM)vue).getjTableCM();
-        
-        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
-               
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TableColumnAdjuster tca = new TableColumnAdjuster(table);
-        tca.adjustColumns();
-        
-        table.getColumnModel().getColumn(11).setMinWidth(0);
-        table.getColumnModel().getColumn(11).setMaxWidth(0);
-        
-                
-        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
-        table.setRowSorter(sorter);
-        
-        Action delete = null;
-        ButtonColumn boutonModifier = new ButtonColumn(table, modifier, 10);
-        ButtonColumn boutonAnnuler = new ButtonColumn(table, supprimer, 12);
-        
-        TableColumn tcolumnas = table.getColumnModel().getColumn(9); 
-        tcolumnas.setCellRenderer(table.getDefaultRenderer(Boolean.class)); 
-        tcolumnas.setCellEditor(table.getDefaultEditor(Boolean.class));
-        
-        
-        table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
-                
-    }
 
     
-
-    
+    /**
+     * 
+     * Permet de charger le solde du compte en cours et le solde sans les anticipations de ce même compte.
+     *
+     * @throws DaoException
+     *          Exception liée à une erreur avec la classe DAO.
+     *          
+     */
     public void chargerSoldeCompteCM() throws DaoException{
         
-        Float soldeCM = dao.lireSoldeCompte(2);
-        Float soldeCMSansAnticipation = dao.lireSoldeCompteSansAnticipation(2);
+        Compta unCompte = (Compta) ((VueAfficherCompteCM)vue).getModeleComboboxCompta().getSelectedItem();
+        Integer idCompte = unCompte.getId();
+        
+        BigDecimal soldeCM = dao.lireSoldeCompte(idCompte);
+        BigDecimal soldeCMSansAnticipation = dao.lireSoldeCompteSansAnticipation(idCompte);
         
         ((VueAfficherCompteCM)vue).getjTextFieldSoldeCompteCIO().setText(soldeCM.toString());
         
@@ -375,6 +680,11 @@ public class CtrlAfficherCompteCM extends Controleur {
         
     }
     
+    /**
+     * 
+     * Permet de vider la JTable.
+     *
+     */
     public void viderJtableModel(){
         
         DefaultTableModel model = ((VueAfficherCompteCM)vue).getModeleJTableCM();

@@ -20,6 +20,10 @@ import java.beans.*;
  *
  *  The source of the Action is a TableCellListener instance.
  */
+/**
+ *
+ * @author btssio
+ */
 public class TableCellListener implements PropertyChangeListener, Runnable
 {
 	private JTable table;

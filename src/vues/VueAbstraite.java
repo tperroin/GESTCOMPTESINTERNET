@@ -17,20 +17,37 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public abstract class VueAbstraite extends JFrame{
     // associations
+    /**
+     *
+     */
     protected Controleur controleur=null;
     
+    /**
+     *
+     * @param ctrl
+     */
     public VueAbstraite(Controleur ctrl) {
         this.controleur = ctrl;
     }
 
+    /**
+     *
+     * @return
+     */
     public Controleur getControleur() {
         return controleur;
     }
     
+    /**
+     *
+     */
     public void afficher(){
         this.setVisible(true);
     }
     
+    /**
+     *
+     */
     public void cacher(){
         this.setVisible(false);
     }

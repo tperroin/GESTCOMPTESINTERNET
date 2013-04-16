@@ -14,12 +14,16 @@ import java.util.*;
 
 
 
+/**
+ *
+ * @author btssio
+ */
 public  class Enregistrement  {
     
     private String id;
     private String prelevementEncaissement;
     private String recetteDepense;
-    private String date;
+    private Date date;
     private String montant;
     private String ancienSolde;
     private String nouveauSolde;
@@ -39,6 +43,9 @@ public  class Enregistrement  {
 
     String IdLibelle;
     
+    /**
+     *
+     */
     public Enregistrement() {
         this.id = null;
         this.prelevementEncaissement = "";
@@ -58,7 +65,26 @@ public  class Enregistrement  {
         this.ordre = null;
     }
 
-    public Enregistrement(String id, String prelevementEncaissement, String recetteDepense, String date, String montant, String ancienSolde, String nouveauSolde, String numCHQ, String dateFacture, String anticipation, String IdCompte, String IdEtat, String modeReglement, String motif, String libelle, String ordre) {
+    /**
+     *
+     * @param id
+     * @param prelevementEncaissement
+     * @param recetteDepense
+     * @param date
+     * @param montant
+     * @param ancienSolde
+     * @param nouveauSolde
+     * @param numCHQ
+     * @param dateFacture
+     * @param anticipation
+     * @param IdCompte
+     * @param IdEtat
+     * @param modeReglement
+     * @param motif
+     * @param libelle
+     * @param ordre
+     */
+    public Enregistrement(String id, String prelevementEncaissement, String recetteDepense, Date date, String montant, String ancienSolde, String nouveauSolde, String numCHQ, String dateFacture, String anticipation, String IdCompte, String IdEtat, String modeReglement, String motif, String libelle, String ordre) {
         this.id = id;
         this.prelevementEncaissement = prelevementEncaissement;
         this.recetteDepense = recetteDepense;
@@ -77,130 +103,258 @@ public  class Enregistrement  {
         this.ordre = ordre;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPrelevementEncaissement() {
         return prelevementEncaissement;
     }
 
+    /**
+     *
+     * @param prelevementEncaissement
+     */
     public void setPrelevementEncaissement(String prelevementEncaissement) {
         this.prelevementEncaissement = prelevementEncaissement;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRecetteDepense() {
         return recetteDepense;
     }
 
+    /**
+     *
+     * @param recetteDepense
+     */
     public void setRecetteDepense(String recetteDepense) {
         this.recetteDepense = recetteDepense;
     }
 
-    public String getDate() {
+    /**
+     *
+     * @return
+     */
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    /**
+     *
+     * @param date
+     */
+    public void setDate(Date date) {
         this.date = date;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMontant() {
         return montant;
     }
 
+    /**
+     *
+     * @param montant
+     */
     public void setMontant(String montant) {
         this.montant = montant;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAncienSolde() {
         return ancienSolde;
     }
 
+    /**
+     *
+     * @param ancienSolde
+     */
     public void setAncienSolde(String ancienSolde) {
         this.ancienSolde = ancienSolde;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNouveauSolde() {
         return nouveauSolde;
     }
 
+    /**
+     *
+     * @param nouveauSolde
+     */
     public void setNouveauSolde(String nouveauSolde) {
         this.nouveauSolde = nouveauSolde;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNumCHQ() {
         return numCHQ;
     }
 
+    /**
+     *
+     * @param numCHQ
+     */
     public void setNumCHQ(String numCHQ) {
         this.numCHQ = numCHQ;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDateFacture() {
         return dateFacture;
     }
 
+    /**
+     *
+     * @param dateFacture
+     */
     public void setDateFacture(String dateFacture) {
         this.dateFacture = dateFacture;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAnticipation() {
         return anticipation;
     }
 
+    /**
+     *
+     * @param anticipation
+     */
     public void setAnticipation(String anticipation) {
         this.anticipation = anticipation;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getIdCompte() {
         return IdCompte;
     }
 
+    /**
+     *
+     * @param IdCompte
+     */
     public void setIdCompte(String IdCompte) {
         this.IdCompte = IdCompte;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getIdEtat() {
         return IdEtat;
     }
 
+    /**
+     *
+     * @param IdEtat
+     */
     public void setIdEtat(String IdEtat) {
         this.IdEtat = IdEtat;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getModeReglement() {
         return modeReglement;
     }
 
+    /**
+     *
+     * @param modeReglement
+     */
     public void setModeReglement(String modeReglement) {
         this.modeReglement = modeReglement;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMotif() {
         return motif;
     }
 
+    /**
+     *
+     * @param motif
+     */
     public void setMotif(String motif) {
         this.motif = motif;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getIdLibelle() {
         return IdLibelle;
     }
 
+    /**
+     *
+     * @param IdLibelle
+     */
     public void setIdLibelle(String IdLibelle) {
         this.IdLibelle = IdLibelle;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getOrdre() {
         return ordre;
     }
 
+    /**
+     *
+     * @param ordre
+     */
     public void setOrdre(String ordre) {
         this.ordre = ordre;
     }

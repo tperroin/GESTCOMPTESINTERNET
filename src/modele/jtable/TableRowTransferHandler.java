@@ -1,5 +1,6 @@
 package modele.jtable;
 
+import controleurs.Controleur;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -19,7 +20,11 @@ public class TableRowTransferHandler extends TransferHandler {
    private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, DataFlavor.javaJVMLocalObjectMimeType, "Integer Row Index");
    private JTable           table             = null;
 
-   public TableRowTransferHandler(JTable table) {
+    /**
+     *
+     * @param table
+     */
+    public TableRowTransferHandler(JTable table) {
       this.table = table;
    }
 

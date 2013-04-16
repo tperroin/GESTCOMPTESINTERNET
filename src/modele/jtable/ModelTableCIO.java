@@ -5,45 +5,84 @@
 package modele.jtable;
 
 import controleurs.CtrlAfficherCompteCIO;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modele.dao.DaoException;
 import modele.dao.DaoH2;
 
+/**
+ *
+ * @author btssio
+ */
 public class ModelTableCIO extends DefaultTableModel implements Reorderable {
+    
     private Object data;
+    private JTable table;
+    
         
-  public void reorder(int from, int to) {
+    /**
+     *
+     * @param from
+     * @param to
+     */
+    public void reorder(int from, int to) {
     Object row = getDataVector().remove(from);
     if( from < to ){ to --;}
     getDataVector().add(to, row);
     fireTableDataChanged();
-        try {
+       
             to = to + 1;
             from = from + 1;
-            mettreAJourOrdre(to, from);
-    
-        } catch (DaoException ex) {
-            Logger.getLogger(ModelTableCIO.class.getName()).log(Level.SEVERE, null, ex);
+            
+        try{
+            mettreAJourOrdre(to, from, Integer.valueOf(getValueAt(from-1, 13).toString()), String.valueOf(getValueAt(from-1, 1)));
+        }catch(Exception e){
+
         }
     
-    
-      
   }
   
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
             
-            return columnIndex==0 ? false : true;
+             if(columnIndex==0){
+                return false;
+            }else{
+                if(rowIndex==0){
+                    return true;
+                }else{
+                    if(columnIndex==11){
+                        return true;
+                    }else{
+                        return true;
+                    
+                    }
+                }
+            }
     }
   
-   public void mettreAJourOrdre(int to, int from) throws DaoException{
+    /**
+     *
+     * @param to
+     * @param from
+     * @param idCompte
+     * @param annee
+     * @throws DaoException
+     */
+    public void mettreAJourOrdre(int to, int from, int idCompte, String annee) throws DaoException, ParseException{
+       
         DaoH2 dao = new DaoH2("gestComptes", "sa", "");
          
         dao.connecter();
         
-        dao.mettreAJourOrdreCIO(to, from);
+        annee = annee.substring(annee.length() - 4);
+        
+        System.out.print(annee);
+        
+        dao.mettreAJourOrdre(to, from, idCompte, annee);
         
    }       
    

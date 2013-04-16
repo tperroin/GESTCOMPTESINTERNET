@@ -27,6 +27,7 @@ public class VueAccueil extends VueAbstraite {
 
     /**
      * Creates new form VueAccueil
+     * @param ctrl 
      */
     public VueAccueil(Controleur ctrl) {
         super(ctrl);
@@ -52,6 +53,7 @@ public class VueAccueil extends VueAbstraite {
         jMenuBarMenu = new javax.swing.JMenuBar();
         jMenuFichier = new javax.swing.JMenu();
         jMenuItemAjouter = new javax.swing.JMenuItem();
+        jMenuItemImprimer = new javax.swing.JMenuItem();
         jMenuItemQuitter = new javax.swing.JMenuItem();
         jMenuAfficher = new javax.swing.JMenu();
         jMenuItemCIO = new javax.swing.JMenuItem();
@@ -81,6 +83,16 @@ public class VueAccueil extends VueAbstraite {
             }
         });
         jMenuFichier.add(jMenuItemAjouter);
+
+        jMenuItemImprimer.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemImprimer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print.png"))); // NOI18N
+        jMenuItemImprimer.setText("Imprimer...");
+        jMenuItemImprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemImprimerActionPerformed(evt);
+            }
+        });
+        jMenuFichier.add(jMenuItemImprimer);
 
         jMenuItemQuitter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemQuitter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/switch.png"))); // NOI18N
@@ -157,9 +169,9 @@ public class VueAccueil extends VueAbstraite {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(148, Short.MAX_VALUE)
+                .addContainerGap(156, Short.MAX_VALUE)
                 .addComponent(jLabelTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 147, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -210,6 +222,14 @@ public class VueAccueil extends VueAbstraite {
         }
     }//GEN-LAST:event_jMenuItemCMArchActionPerformed
 
+    private void jMenuItemImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemImprimerActionPerformed
+        try {
+            ((CtrlAccueil)controleur).afficherImpression();
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAccueil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemImprimerActionPerformed
+
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -224,6 +244,7 @@ public class VueAccueil extends VueAbstraite {
     private javax.swing.JMenuItem jMenuItemCIOArch;
     private javax.swing.JMenuItem jMenuItemCM;
     private javax.swing.JMenuItem jMenuItemCMArch;
+    private javax.swing.JMenuItem jMenuItemImprimer;
     private javax.swing.JMenuItem jMenuItemQuitter;
     // End of variables declaration//GEN-END:variables
 

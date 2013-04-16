@@ -9,12 +9,15 @@ import com.alee.extended.breadcrumb.WebBreadcrumbLabel;
 import com.alee.extended.filechooser.WebFileChooserField;
 import com.alee.extended.panel.GroupPanel;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.toolbar.ToolbarStyle;
 import com.alee.laf.toolbar.WebToolBar;
 import com.toedter.calendar.JYearChooser;
 import controleurs.Controleur;
 import controleurs.CtrlArchivageCIO;
+import controleurs.CtrlImpression;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.sql.SQLException;
@@ -22,10 +25,13 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import metier.Compta;
 import modele.dao.DaoException;
 import org.h2.tools.Csv;
 import org.h2.tools.SimpleResultSet;
@@ -38,12 +44,24 @@ public class VueArchivageCIO extends VueAbstraite {
     /**
      * Creates new form VueAccueil
      */
+    DefaultComboBoxModel modeleComboboxCompta;
+    
+    
+    /**
+     *
+     * @param ctrl
+     */
     public VueArchivageCIO(Controleur ctrl) {
         super(ctrl);
         initComponents();
         
         this.pack();
         this.setLocationRelativeTo(null);
+        
+        modeleComboboxCompta = new DefaultComboBoxModel();
+        webComboBoxCompta.setModel(modeleComboboxCompta);
+        
+        
     }
     
     
@@ -61,9 +79,12 @@ public class VueArchivageCIO extends VueAbstraite {
         webButton1 = new com.alee.laf.button.WebButton();
         jYearChooser1 = new com.toedter.calendar.JYearChooser();
         webLabel1 = new com.alee.laf.label.WebLabel();
+        webComboBoxCompta = new com.alee.laf.combobox.WebComboBox();
+        webLabelChoisirCompta = new com.alee.laf.label.WebLabel();
         jMenuBarMenu = new javax.swing.JMenuBar();
         jMenuFichier = new javax.swing.JMenu();
         jMenuItemAjouter = new javax.swing.JMenuItem();
+        jMenuItemImprimer = new javax.swing.JMenuItem();
         jMenuItemQuitter = new javax.swing.JMenuItem();
         jMenuAfficher = new javax.swing.JMenu();
         jMenuItemCIO = new javax.swing.JMenuItem();
@@ -86,6 +107,8 @@ public class VueArchivageCIO extends VueAbstraite {
 
         webLabel1.setText("Année à archiver :");
 
+        webLabelChoisirCompta.setText("Choisir comptabilité :");
+
         jMenuFichier.setText("Fichier");
 
         jMenuItemAjouter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
@@ -97,6 +120,16 @@ public class VueArchivageCIO extends VueAbstraite {
             }
         });
         jMenuFichier.add(jMenuItemAjouter);
+
+        jMenuItemImprimer.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItemImprimer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print.png"))); // NOI18N
+        jMenuItemImprimer.setText("Imprimer...");
+        jMenuItemImprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemImprimerActionPerformed(evt);
+            }
+        });
+        jMenuFichier.add(jMenuItemImprimer);
 
         jMenuItemQuitter.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItemQuitter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/switch.png"))); // NOI18N
@@ -163,25 +196,38 @@ public class VueArchivageCIO extends VueAbstraite {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(53, 53, 53)
+                .addContainerGap()
+                .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(49, Short.MAX_VALUE))
+                    .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(48, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(webLabelChoisirCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addComponent(webComboBoxCompta, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(142, 142, 142)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(92, Short.MAX_VALUE))
+                    .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(74, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(107, 107, 107)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(webComboBoxCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(webLabelChoisirCompta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(144, Short.MAX_VALUE)))
         );
 
         pack();
@@ -217,7 +263,11 @@ public class VueArchivageCIO extends VueAbstraite {
 
     private void webButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButton1ActionPerformed
         try {
-            ((CtrlArchivageCIO)controleur).sauvegarder(getjYearChooser1().getYear());
+            
+            Compta unCompte = (Compta) getModeleComboboxCompta().getSelectedItem();
+            Integer idCompte = unCompte.getId();
+            
+            ((CtrlArchivageCIO)controleur).sauvegarder(getjYearChooser1().getYear(), idCompte);
         } catch (DaoException ex) {
             Logger.getLogger(VueArchivageCIO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -344,6 +394,14 @@ public class VueArchivageCIO extends VueAbstraite {
         }
     }//GEN-LAST:event_jMenuItemCMArchActionPerformed
 
+    private void jMenuItemImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemImprimerActionPerformed
+        try {
+            ((CtrlArchivageCIO)controleur).afficherImpression();
+        } catch (DaoException ex) {
+            Logger.getLogger(VueAfficherCompteCM.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemImprimerActionPerformed
+
    
     
     
@@ -358,11 +416,94 @@ public class VueArchivageCIO extends VueAbstraite {
     private javax.swing.JMenuItem jMenuItemCIOArch;
     private javax.swing.JMenuItem jMenuItemCM;
     private javax.swing.JMenuItem jMenuItemCMArch;
+    private javax.swing.JMenuItem jMenuItemImprimer;
     private javax.swing.JMenuItem jMenuItemQuitter;
     private com.toedter.calendar.JYearChooser jYearChooser1;
     private com.alee.laf.button.WebButton webButton1;
+    private com.alee.laf.combobox.WebComboBox webComboBoxCompta;
     private com.alee.laf.label.WebLabel webLabel1;
+    private com.alee.laf.label.WebLabel webLabelChoisirCompta;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     *
+     * @return
+     */
+    public DefaultComboBoxModel getModeleComboboxCompta() {
+        return modeleComboboxCompta;
+    }
+
+    /**
+     *
+     * @param modeleComboboxCompta
+     */
+    public void setModeleComboboxCompta(DefaultComboBoxModel modeleComboboxCompta) {
+        this.modeleComboboxCompta = modeleComboboxCompta;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public JMenuItem getjMenuItemImprimer() {
+        return jMenuItemImprimer;
+    }
+
+    /**
+     *
+     * @param jMenuItemImprimer
+     */
+    public void setjMenuItemImprimer(JMenuItem jMenuItemImprimer) {
+        this.jMenuItemImprimer = jMenuItemImprimer;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebComboBox getWebComboBoxCompta() {
+        return webComboBoxCompta;
+    }
+
+    /**
+     *
+     * @param webComboBoxCompta
+     */
+    public void setWebComboBoxCompta(WebComboBox webComboBoxCompta) {
+        this.webComboBoxCompta = webComboBoxCompta;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebLabel getWebLabel1() {
+        return webLabel1;
+    }
+
+    /**
+     *
+     * @param webLabel1
+     */
+    public void setWebLabel1(WebLabel webLabel1) {
+        this.webLabel1 = webLabel1;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public WebLabel getWebLabelChoisirCompta() {
+        return webLabelChoisirCompta;
+    }
+
+    /**
+     *
+     * @param webLabelChoisirCompta
+     */
+    public void setWebLabelChoisirCompta(WebLabel webLabelChoisirCompta) {
+        this.webLabelChoisirCompta = webLabelChoisirCompta;
+    }
 
     
 }

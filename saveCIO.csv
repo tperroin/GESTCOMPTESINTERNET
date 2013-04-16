@@ -1,0 +1,6 @@
+"ID";"LIBELLE";"MODE DE REGLEMENT";"MOTIF";"ETAT";"RECETTE ou DEPENSE";"DATE ENREGISTREMENT";"MONTANT";"ANCIEN SOLDE";"NOUVEAU SOLDE";"DATE FACTURE";"NUMCHQ";"ANTICIPATION";"ORDRE"
+"1";"ADITEC";"Remise de chèques";"Règlements clients";"Terminé";"Recette";"11 February 2013";"123.00";"1711.00";"1834.00";"fghj";"";"FALSE";"1"
+"9";"HELIO GRAPHIC";"Remise de chèques";"Règlements clients";"Terminé";"Recette";"14 February 2013";"32.25";"1834.00";"1866.25";"dsq";"dsq";"FALSE";"2"
+"4";"ELIS";"Remise de chèques";"Règlements clients";"Terminé";"Recette";"11 February 2013";"56.00";"1866.25";"1922.25";"ezaea";"";"FALSE";"3"
+"2";"ACTI ENERGIE";"Remise de chèques";"Restaurant";"Terminé";"Recette";"11 February 2013";"32.00";"1922.25";"1954.25";"zdqsd";"";"FALSE";"4"
+"3";"France TELECOM";"Remise de chèques";"Fournisseurs";"Terminé";"Recette";"11 February 2013";"345.23";"1954.25";"2299.48";"sdfv";"hfdkhfkjsd";"FALSE";"5"
